@@ -1,11 +1,11 @@
 
 package metropos;
 
-import metropos.view.LoginView;
+import metropos.view.SplashScreenView;
 
 public class MetroPos {
     public static void main(String[] args) {
-       new LoginView();
+       new SplashScreenView();
     }
     
 }
