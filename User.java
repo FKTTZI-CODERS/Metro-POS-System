@@ -49,7 +49,7 @@ public void createTable() throws SQLException
     String sql2 = "CREATE TABLE IF NOT EXISTS Branch(" +
                   "Branch_Code VARCHAR(10) PRIMARY KEY, " +
                   "name VARCHAR(55) NOT NULL UNIQUE, " +
-                  "city VARCHAR(55) NOT NULL UNIQUE, " +
+                  "city VARCHAR(55) NOT NULL, " +
                   "address VARCHAR(55) NOT NULL UNIQUE, " +
                   "phone VARCHAR(11), " +
                   "active BOOLEAN DEFAULT TRUE, " +
@@ -61,7 +61,6 @@ public void createTable() throws SQLException
     // Branch Manager table
     String sql3 = "CREATE TABLE IF NOT EXISTS BranchManager(" +
                   "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                  "manager_Code VARCHAR(10) UNIQUE, " +
                   "name VARCHAR(55), " +
                   "email VARCHAR(255) UNIQUE, " +
                   "password VARCHAR(255) DEFAULT 'Password_123', " +
@@ -74,7 +73,7 @@ public void createTable() throws SQLException
     
     // Cashier table
     String sql4 = "CREATE TABLE IF NOT EXISTS Cashier(" +
-                  "Cashier_Code VARCHAR(10) PRIMARY KEY, " +
+                  "Cashier_id INT AUTO_INCREMENT PRIMARY KEY, " +
                   "name VARCHAR(55) NOT NULL UNIQUE, " +
                   "email VARCHAR(55) UNIQUE, " +
                   "password VARCHAR(255) DEFAULT 'Password_123', " +
@@ -86,7 +85,7 @@ public void createTable() throws SQLException
     s.executeUpdate(sql4);
     
     // DataEntryOperator table
-    String sql5 = "CREATE TABLE IF NOT EXISTS Branch(" +
+    String sql5 = "CREATE TABLE IF NOT EXISTS DataEntryOperator(" +
                   "DEO_Code VARCHAR(10) PRIMARY KEY, " +
                   "name VARCHAR(55) NOT NULL UNIQUE, " +
                   "email VARCHAR(55) UNIQUE, " +
@@ -123,7 +122,7 @@ public boolean login(String email , String pass, String type) throws SQLExceptio
     }
     else if(type.equals("DataEntryOperator"))
     {
-        String query= "Select * from DEO where email = ? AND password = ?";
+        String query= "Select * from DataEntryOperator where email = ? AND password = ?";
          PreparedStatement ps= conn.prepareStatement(query);
         ps.setString(1, email);
         ps.setString(2, pass);
