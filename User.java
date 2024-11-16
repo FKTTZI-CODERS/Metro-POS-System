@@ -49,7 +49,7 @@ public void createTable() throws SQLException
     String sql2 = "CREATE TABLE IF NOT EXISTS Branch(" +
                   "Branch_Code VARCHAR(10) PRIMARY KEY, " +
                   "name VARCHAR(55) NOT NULL UNIQUE, " +
-                  "city VARCHAR(55) NOT NULL, " +
+                  "city VARCHAR(55) NOT NULL UNIQUE, " +
                   "address VARCHAR(55) NOT NULL UNIQUE, " +
                   "phone VARCHAR(11), " +
                   "active BOOLEAN DEFAULT TRUE, " +
@@ -61,41 +61,45 @@ public void createTable() throws SQLException
     // Branch Manager table
     String sql3 = "CREATE TABLE IF NOT EXISTS BranchManager(" +
                   "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                  "manager_Code VARCHAR(10) UNIQUE, " +
                   "name VARCHAR(55), " +
                   "email VARCHAR(255) UNIQUE, " +
                   "password VARCHAR(255) DEFAULT 'Password_123', " +
                   "Branch_Code VARCHAR(10), " +
                   "salary DECIMAL(10,2), " +
+                  "firstLogin BOOLEAN DEFAULT TRUE, "+
                   "FOREIGN KEY (Branch_Code) REFERENCES Branch(Branch_Code) ON DELETE SET NULL, " +
                   "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
     s = conn.createStatement();
     s.executeUpdate(sql3);
     
     // Cashier table
-    String sql4 = "CREATE TABLE IF NOT EXISTS Cashier(" +
-                  "Cashier_id INT AUTO_INCREMENT PRIMARY KEY, " +
-                  "name VARCHAR(55) NOT NULL UNIQUE, " +
-                  "email VARCHAR(55) UNIQUE, " +
-                  "password VARCHAR(255) DEFAULT 'Password_123', " +
-                  "Branch_Code VARCHAR(10), " +
-                  "salary DECIMAL(10,2), " +
-                  "FOREIGN KEY (Branch_Code) REFERENCES Branch(Branch_Code) ON DELETE SET NULL, " +
-                  "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
-    s = conn.createStatement();
-    s.executeUpdate(sql4);
-    
-    // DataEntryOperator table
-    String sql5 = "CREATE TABLE IF NOT EXISTS DataEntryOperator(" +
-                  "DEO_Code VARCHAR(10) PRIMARY KEY, " +
-                  "name VARCHAR(55) NOT NULL UNIQUE, " +
-                  "email VARCHAR(55) UNIQUE, " +
-                  "password VARCHAR(255) DEFAULT 'Password_123', " +
-                  "Branch_Code VARCHAR(10), " +
-                  "salary DECIMAL(10,2), " +
-                  "FOREIGN KEY (Branch_Code) REFERENCES Branch(Branch_Code) ON DELETE SET NULL, " +
-                  "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
-    s = conn.createStatement();
-    s.executeUpdate(sql5);
+String sql4 = "CREATE TABLE IF NOT EXISTS Cashier(" +
+              "employeeNo INT AUTO_INCREMENT PRIMARY KEY, " +
+              "Cashier_Code VARCHAR(10) UNIQUE, " +
+              "name VARCHAR(55) NOT NULL, " +
+              "email VARCHAR(55) UNIQUE, " +
+              "password VARCHAR(255) DEFAULT 'Password_123', " +
+              "Branch_Code VARCHAR(10), " +
+              "salary DECIMAL(10,2), " +
+              "FOREIGN KEY (Branch_Code) REFERENCES Branch(Branch_Code) ON DELETE SET NULL, " +
+              "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+s.executeUpdate(sql4);
+
+// DataEntryOperator table
+String sql5 = "CREATE TABLE IF NOT EXISTS DataEntryOperator(" +
+              "employeeNo INT AUTO_INCREMENT PRIMARY KEY, " +
+              "DEO_Code VARCHAR(10) UNIQUE, " +
+              "name VARCHAR(55) NOT NULL, " +
+              "email VARCHAR(55) UNIQUE, " +
+              "password VARCHAR(255) DEFAULT 'Password_123', " +
+              "Branch_Code VARCHAR(10), " +
+              "salary DECIMAL(10,2), " +
+              "FOREIGN KEY (Branch_Code) REFERENCES Branch(Branch_Code) ON DELETE SET NULL, " +
+              "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+s.executeUpdate(sql5);
+
+
 }
 
         
@@ -140,6 +144,18 @@ else
     }
     
 }
+public boolean checkFirstLogin(String email) throws SQLException {
+    String query = "SELECT firstLogin FROM BranchManager WHERE email = ?";
+    PreparedStatement ps = conn.prepareStatement(query);
+    ps.setString(1, email);
+    ResultSet res = ps.executeQuery();
+    
+    if (res.next()) {
+        return res.getBoolean("firstLogin");
+    }
+    return false;
+}
+
 
 
 }
