@@ -1,5 +1,4 @@
 
-
 package metropos.controller;
 
 import java.sql.Connection;
@@ -7,11 +6,10 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import metropos.model.DBConnection;
 import metropos.model.User;
+import metropos.view.BranchManagerDashboardView;
+import metropos.view.CashierDashboardView;
 import metropos.view.LoginView;
 import metropos.view.SuperAdminDashboardView;
-import metropos.view.BranchManagerDashboardView;
-import metropos.view.ChangePasswordView;
-import java.sql.PreparedStatement;
 
 public class AuthenticateController 
 {String email ;
@@ -22,16 +20,19 @@ Connection conn;
 DBConnection db;
 User u;
 SuperAdminDashboardView sa;
+CashierDashboardView c;
 BranchManagerDashboardView bm;
+
 public AuthenticateController()
 {db= new DBConnection();
     this.conn=(Connection) db.getConnection();
     u= new User();
+  
 
 }
 
     public void login(String e , String pass, String t) throws SQLException
-    {if(e.isEmpty() || pass.isEmpty())
+    {if(e.isEmpty()||pass.isEmpty()|| t.isEmpty())
     {
         JOptionPane.showMessageDialog(null,"Please fill in all blank fields");
         return;
@@ -46,21 +47,33 @@ public AuthenticateController()
               JOptionPane.showMessageDialog(null,"Login successFull");
               sa= new SuperAdminDashboardView();
           }
+          else
+          {JOptionPane.showMessageDialog(null,"Failed to Login!");
+          return;
+          }
+        }
           
+      
+      else if(t.equals("Branch Manager"))
+      {
+            if(u.login(e, pass, t))
+          {
+              JOptionPane.showMessageDialog(null,"Login successFull");
+              isFirstLogin(e,"Branch Manager");
+              
+          }
+           else
+           {
+               JOptionPane.showMessageDialog(null,"Failed to Login!");
+          return;
+           }
       }
-      else if(t.equals("BranchManager")){
-       boolean isFirstLogin = u.checkFirstLogin(e); 
-                    if (isFirstLogin) {
-                        ChangePasswordView changePasswordView = new ChangePasswordView(e);
-                    } else {
-                        bm = new BranchManagerDashboardView();
-                    }
-                }
       else if(t.equals("DataEntryOperator"))
       {
             if(u.login(e, pass, t))
           {
               JOptionPane.showMessageDialog(null,"Login successFull");
+              isFirstLogin(e,type);
           }
       }
       else
@@ -68,20 +81,58 @@ public AuthenticateController()
            if(u.login(e, pass, t))
           {
               JOptionPane.showMessageDialog(null,"Login successFull");
+              isFirstLogin(e,"Cashier");
+              
           }
+           else
+           {
+               JOptionPane.showMessageDialog(null,"Failed to Login!");
+          return;
+           }
       }
     }
         
     }
-    public boolean updatePassword(String email, String newPassword) throws SQLException {
-    String query = "UPDATE BranchManager SET password = ?, firstLogin = FALSE WHERE email = ?";
-    PreparedStatement ps = conn.prepareStatement(query);
-    ps.setString(1, newPassword);
-    ps.setString(2, email);
-    
-    int rowsAffected = ps.executeUpdate();
-    
-    return rowsAffected > 0; //successfully updated password
-}
-
+    private void isFirstLogin(String email, String type) throws SQLException
+    {if(email.isEmpty()|| type.isEmpty())
+    { JOptionPane.showMessageDialog(null,"No field can be empty");
+        return;
+    }
+    if(u.isFirstLogin(email,type))
+    {  l= new LoginView();
+        JOptionPane.showMessageDialog(null,"You must change your password before proceeding.");
+       l.changePassScreen(email,type);
+    }
+        else
+    {if(type.equalsIgnoreCase("Cashier"))
+    { c= new CashierDashboardView();}
+    else if (type.equalsIgnoreCase("Branch Manager"))
+    {
+        bm= new BranchManagerDashboardView();
+    }
+    }
+    }
+    public void changePass(String newpass,String confirmpass,String email,String type) throws SQLException
+    {
+        if(newpass.isEmpty() || confirmpass.isEmpty() || email.isEmpty())
+        {
+            JOptionPane.showMessageDialog(null,"Please fill in all blank fields");
+        return;
+        }
+        if(!newpass.equals(confirmpass))
+        {
+            JOptionPane.showMessageDialog(null,"new Password does not match Confirm password!");
+            return;
+        
+        }
+        else
+        {
+            u.changePass(newpass,email,type);
+            JOptionPane.showMessageDialog(null,"Password changed successfully!");
+            if(type.equalsIgnoreCase("Cashier"))
+            c= new CashierDashboardView();
+            else if(type.equalsIgnoreCase("Branch Manager"))
+                bm= new BranchManagerDashboardView();
+        }
+    }
 }
