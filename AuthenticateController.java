@@ -1,4 +1,5 @@
 
+
 package metropos.controller;
 
 import java.sql.Connection;
@@ -8,6 +9,9 @@ import metropos.model.DBConnection;
 import metropos.model.User;
 import metropos.view.LoginView;
 import metropos.view.SuperAdminDashboardView;
+import metropos.view.BranchManagerDashboardView;
+import metropos.view.ChangePasswordView;
+import java.sql.PreparedStatement;
 
 public class AuthenticateController 
 {String email ;
@@ -18,6 +22,7 @@ Connection conn;
 DBConnection db;
 User u;
 SuperAdminDashboardView sa;
+BranchManagerDashboardView bm;
 public AuthenticateController()
 {db= new DBConnection();
     this.conn=(Connection) db.getConnection();
@@ -43,13 +48,14 @@ public AuthenticateController()
           }
           
       }
-      else if(t.equals("BranchManager"))
-      {
-            if(u.login(e, pass, t))
-          {
-              JOptionPane.showMessageDialog(null,"Login successFull");
-          }
-      }
+      else if(t.equals("BranchManager")){
+       boolean isFirstLogin = u.checkFirstLogin(e); 
+                    if (isFirstLogin) {
+                        ChangePasswordView changePasswordView = new ChangePasswordView(e);
+                    } else {
+                        bm = new BranchManagerDashboardView();
+                    }
+                }
       else if(t.equals("DataEntryOperator"))
       {
             if(u.login(e, pass, t))
@@ -67,4 +73,15 @@ public AuthenticateController()
     }
         
     }
+    public boolean updatePassword(String email, String newPassword) throws SQLException {
+    String query = "UPDATE BranchManager SET password = ?, firstLogin = FALSE WHERE email = ?";
+    PreparedStatement ps = conn.prepareStatement(query);
+    ps.setString(1, newPassword);
+    ps.setString(2, email);
+    
+    int rowsAffected = ps.executeUpdate();
+    
+    return rowsAffected > 0; //successfully updated password
+}
+
 }
