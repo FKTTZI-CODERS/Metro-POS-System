@@ -5,14 +5,14 @@ import java.sql.SQLException;
 
 public class BranchManager extends User {
     
-    public boolean addCashier(String cashierCode, String name, String email, String salary, String branchCode) throws SQLException {
-        String query = "INSERT INTO Cashier (Cashier_Code, name, email, salary, Branch_Code) VALUES (?, ?, ?, ?, ?)";
+    public boolean addCashier( String name, String email, String salary, String branchCode) throws SQLException {
+        String query = "INSERT INTO Cashier (name, email, salary, Branch_Code) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = conn.prepareStatement(query);
-        ps.setString(1, cashierCode);
-        ps.setString(2, name);
-        ps.setString(3, email);
-        ps.setString(4, salary);
-        ps.setString(5, branchCode);
+  
+        ps.setString(1, name);
+        ps.setString(2, email);
+        ps.setString(3, salary);
+        ps.setString(4, branchCode);
         return ps.executeUpdate() > 0;
     }
 
