@@ -17,7 +17,7 @@ import javax.swing.JTextField;
 import metropos.controller.BranchManagerController;
 
 public class BranchManagerDashboardView extends JFrame {
-    private JButton addCashierButton, addDataEntryOperatorButton, cancelButton;
+    private JButton addCashierButton, addDataEntryOperatorButton, cancelButton,viewR;
     private BranchManagerController controller;
 
     public BranchManagerDashboardView() {
@@ -65,7 +65,7 @@ public class BranchManagerDashboardView extends JFrame {
         JPanel buttonPanel = new JPanel(new GridLayout(3, 0));
         buttonPanel.add(addCashierButton);
         buttonPanel.add(addDataEntryOperatorButton);
-
+        buttonPanel.add(viewR);
         setLayout(new BorderLayout());
         add(new JLabel("--- Branch Manager Dashboard ---"), BorderLayout.NORTH);
         add(buttonPanel, BorderLayout.CENTER);
@@ -82,9 +82,7 @@ public class BranchManagerDashboardView extends JFrame {
         JTextField emailField = new JTextField();
         JTextField salaryField = new JTextField();
         JTextField branchCodeField = new JTextField();
-
-        formPanel.add(new JLabel("Cashier Code:"));
-        formPanel.add(cashierCodeField);
+        
         formPanel.add(new JLabel("Name:"));
         formPanel.add(nameField);
         formPanel.add(new JLabel("Email:"));
@@ -101,18 +99,18 @@ public class BranchManagerDashboardView extends JFrame {
         doneButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String cashierCode = cashierCodeField.getText();
+               
                 String name = nameField.getText();
                 String email = emailField.getText();
                 String salary = salaryField.getText();
                 String branchCode = branchCodeField.getText();
 
                 try {
-                    controller.addCashier(cashierCode, name, email, salary, branchCode);
-                    cashierFrame.dispose();
+                    controller.addCashier(name, email, salary, branchCode);
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Error adding cashier: " + ex.getMessage());
+                    Logger.getLogger(BranchManagerDashboardView.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                cashierFrame.dispose();
             }
         });
 
@@ -172,10 +170,10 @@ public class BranchManagerDashboardView extends JFrame {
 
                 try {
                     controller.addDataEntryOperator(deoCode, name, email, salary, branchCode);
-                    deoFrame.dispose();
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(null, "Error adding data entry operator: " + ex.getMessage());
+                    Logger.getLogger(BranchManagerDashboardView.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                deoFrame.dispose();
             }
         });
 
