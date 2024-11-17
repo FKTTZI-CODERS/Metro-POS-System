@@ -12,12 +12,12 @@ public class BranchManagerController {
         branchManager = new BranchManager();
     }
 
-    public void addCashier(String employeeNo, String name, String email, String salary, String branchCode) throws SQLException {
-        if (employeeNo.isEmpty() || name.isEmpty() || email.isEmpty() || salary.isEmpty() || branchCode.isEmpty()) {
+    public void addCashier( String name, String email, String salary, String branchCode) throws SQLException {
+        if ( name.isEmpty() || email.isEmpty() || salary.isEmpty() || branchCode.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Please fill in all blank fields");
             return;
         }
-        if (branchManager.addCashier(employeeNo, name, email,salary, branchCode)) {
+        if (branchManager.addCashier( name, email,salary, branchCode)) {
             JOptionPane.showMessageDialog(null, "Cashier added successfully!");
         } else {
             JOptionPane.showMessageDialog(null, "Failed to add cashier!");
