@@ -109,7 +109,7 @@ public void createTable() throws SQLException
      //Product table
       String sql8="CREATE TABLE IF NOT EXISTS Product ("+
                 "Product_id INT AUTO_INCREMENT PRIMARY KEY,"
-            + " Product_Name VARCHAR(255) NOT NULL,"
+            + "Product_Name VARCHAR(255) NOT NULL,"
             +"Category VARCHAR(255) NOT NULL,"+ "Original_Price DECIMAL(10,2) NOT NULL,"+
             "Sale_Price DECIMAL(10,2) NOT NULL," +"Price_per_Unit DECIMAL(10,2) NOT NULL," +
               "Price_per_Carton DECIMAL(10,2) NOT NULL," + "Stock_Quantity INT DEFAULT 0," + "Vendor_id INT,"+
@@ -139,13 +139,15 @@ public void createTable() throws SQLException
             "FOREIGN KEY (Branch_Code) REFERENCES Branch(Branch_Code) ON DELETE CASCADE," +"FOREIGN KEY (Product_id) REFERENCES Product(Product_id) ON DELETE CASCADE)";
     s=conn.createStatement();
     s.executeUpdate(sql7);
+    
+    
 }
 
         
 
 public boolean login(String email , String pass, String type) throws SQLException
 {
-    if(type.equals("SuperAdmin"))
+    if(type.equals("Super Admin"))
     {createTable();
         String query= "Select * from superAdmin where email = ? AND password = ?";
          PreparedStatement ps= conn.prepareStatement(query);
@@ -209,10 +211,59 @@ public void changePass(String newpass,String email,String type) throws SQLExcept
     {
         query="update BranchManager set password= ? where email=?";
     }
+    else if(type.equalsIgnoreCase("Super Admin"))
+    {
+         query="update superAdmin set password= ? where email=?";
+    }
+    else
+    {
+         query="update DataEntryOperator set password= ? where email=?";
+    }
     PreparedStatement ps = conn.prepareStatement(query);
     ps.setString(1,newpass);
     ps.setString(2,email);
     ps.executeUpdate();
 }
+public void increaseEmployeeCount(String bcode) throws SQLException
+{
+    String q1="select employeeCount from Branch where Branch_Code=?";
+    PreparedStatement ps = conn.prepareStatement(q1);
+    ps.setString(1,bcode);
+    ResultSet rs=ps.executeQuery();
+    if(rs.next())
+        
+    {
+        int empcount=rs.getInt("employeeCount");
+       empcount++;
+       String q2="update Branch set employeeCount=? where Branch_Code=?";
+       ps=conn.prepareStatement(q2);
+       ps.setInt(1,empcount);
+       ps.setString(2,bcode);
+       ps.executeUpdate(); 
+    }
+}
+public boolean emailExists(String email,String role) throws SQLException
+{String query="";
+    if(role.equalsIgnoreCase("Super Admin"))
+    {query= "select * from superAdmin where email = ?";}
+    else if (role.equalsIgnoreCase("Branch Manager"))
+    {query= "select * from BranchManager where email = ?";}
+    else if (role.equalsIgnoreCase("Cashier"))
+    {query="select * from Cashier where email=?";}
+    else
+    {
+        query="select * from DataEntryOperator where email=?";
+    }
+    PreparedStatement ps = conn.prepareStatement(query);
+    ps.setString(1,email);
+    ResultSet rs= ps.executeQuery();
+    if(rs.next() && rs.getInt(1)>0)
+    {
+        return true;
+        
+    }
+    return false;
+}
+
 
 }
