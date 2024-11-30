@@ -3,6 +3,15 @@ package metropos.controller;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
+import java.util.Random;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
 import metropos.model.DBConnection;
 import metropos.model.User;
@@ -40,7 +49,7 @@ public AuthenticateController()
     }
     else
     {
-      if(t.equals("SuperAdmin"))
+      if(t.equalsIgnoreCase("Super Admin"))
       {
           if(u.login(e, pass, t))
           {
@@ -130,9 +139,27 @@ public AuthenticateController()
             u.changePass(newpass,email,type);
             JOptionPane.showMessageDialog(null,"Password changed successfully!");
             if(type.equalsIgnoreCase("Cashier"))
-            c= new CashierDashboardView();
+            { c= new CashierDashboardView();}
             else if(type.equalsIgnoreCase("Branch Manager"))
-                bm= new BranchManagerDashboardView();
+            { bm= new BranchManagerDashboardView();}
         }
     }
+    public void forgotPass(String role,String email) throws SQLException
+    {
+        if(email.isEmpty() || role.isEmpty())
+        {
+            JOptionPane.showMessageDialog(null, "Fields cannot be empty!");
+            return;
+        }
+        if(u.emailExists(email,role))
+        {l=new LoginView();
+                l.changePassScreen(email, role);
+            }
+        else
+        { JOptionPane.showMessageDialog(null,"Email not found!");
+        return ;
+        }
+    }
+
+  
 }
