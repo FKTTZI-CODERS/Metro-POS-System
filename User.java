@@ -165,7 +165,7 @@ public boolean login(String email , String pass, String type) throws SQLExceptio
         ResultSet res = ps.executeQuery();
         return res.next();  
     }
-    else if(type.equals("DataEntryOperator"))
+    else if(type.equals("Data Entry Operator"))
     {
         String query= "Select * from DataEntryOperator where email = ? AND password = ?";
          PreparedStatement ps= conn.prepareStatement(query);
@@ -185,24 +185,28 @@ else
     }
     
 }
-public boolean isFirstLogin(String email,String  type) throws SQLException
-{String query="";
-    if(type.equalsIgnoreCase("Cashier"))
-{ query= "select password from cashier where email=?";}
-    else if(type.equalsIgnoreCase("Branch Manager"))
-    {query= "select password from BranchManager where email=?";
-        
+public boolean isFirstLogin(String email, String type) throws SQLException {
+    String query = "";
+
+    if (type.equalsIgnoreCase("Cashier")) {
+        query = "SELECT password FROM cashier WHERE email=?";
+    } else if (type.equalsIgnoreCase("Branch Manager")) {
+        query = "SELECT password FROM BranchManager WHERE email=?";
+    } else if (type.equalsIgnoreCase("Data Entry Operator")) {  // Added DEO condition
+        query = "SELECT password FROM DataEntryOperator WHERE email=?";
     }
-    PreparedStatement ps= conn.prepareStatement(query);
-    ps.setString(1,email);
-    ResultSet res= ps.executeQuery();
-    if(res.next())
-    {
-        String pass= res.getString(("password"));
+
+    PreparedStatement ps = conn.prepareStatement(query);
+    ps.setString(1, email);
+    ResultSet res = ps.executeQuery();
+    if (res.next()) {
+        String pass = res.getString("password");
         return "Password_123".equals(pass);
     }
+
     return false;
 }
+
 public void changePass(String newpass,String email,String type) throws SQLException
 {String query="";
     if(type.equalsIgnoreCase("Cashier"))
