@@ -18,7 +18,7 @@ public class DEODashboardView extends JFrame {
     public DEODashboardView() {
         controller = new DEOController();
         setTitle("Data Entry Operator Dashboard");
-        setSize(800, 800); // Increased size to fit both tables
+        setSize(800, 800); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
