@@ -11,13 +11,15 @@ public class DataEntryOperator extends User {
     }
 
    
-    public ResultSet getProducts() throws SQLException {
-        String query = "SELECT p.Product_Name, p.Category, p.Sale_Price, v.Vendor_Name " +
-                       "FROM Product p " +
-                       "JOIN Vendor v ON p.Vendor_id = v.Vendor_id";
-        Statement stmt = conn.createStatement();
-        return stmt.executeQuery(query);
-    }
+   public ResultSet getProducts() throws SQLException {
+    String query = "SELECT p.Product_id, p.Product_Name, p.Category, p.Original_Price, p.Sale_Price, " +
+                   "p.Price_per_Unit, p.Price_per_Carton, p.Stock_Quantity, v.Vendor_Name " +
+                   "FROM Product p " +
+                   "JOIN Vendor v ON p.Vendor_id = v.Vendor_id";
+    Statement stmt = conn.createStatement();
+    return stmt.executeQuery(query);
+}
+
 
    
     public boolean addVendor(String name, String contact, String address) throws SQLException {
