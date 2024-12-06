@@ -1,54 +1,63 @@
 package metropos.view;
 
 import metropos.controller.DEOController;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.Vector;
 
 public class DEODashboardView extends JFrame {
 
     private JTable vendorTable, productTable;
-    private JButton addVendorButton, addProductButton;
+    private JButton addVendorButton, addProductButton, editVendorButton, editProductButton, deleteVendorButton, deleteProductButton;
     private DEOController controller;
 
     public DEODashboardView() {
         controller = new DEOController();
         setTitle("Data Entry Operator Dashboard");
-        setSize(800, 800); 
+        setSize(1000, 800); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-       
+        
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
-       
+        
         vendorTable = new JTable();
         JScrollPane vendorScrollPane = new JScrollPane(vendorTable);
-        panel.add(vendorScrollPane, BorderLayout.NORTH); 
+        panel.add(vendorScrollPane, BorderLayout.NORTH);
 
-      
+        
         productTable = new JTable();
         JScrollPane productScrollPane = new JScrollPane(productTable);
-        panel.add(productScrollPane, BorderLayout.CENTER); 
+        panel.add(productScrollPane, BorderLayout.CENTER);
 
        
         JPanel buttonPanel = new JPanel();
-        addVendorButton = new JButton("Add New Vendor");
-        addProductButton = new JButton("Add New Product");
+        addVendorButton = new JButton("Add Vendor");
+        editVendorButton = new JButton("Edit Vendor");
+        deleteVendorButton = new JButton("Delete Vendor");
+        addProductButton = new JButton("Add Product");
+        deleteProductButton = new JButton("Delete Product");
 
         buttonPanel.add(addVendorButton);
+        buttonPanel.add(editVendorButton);
+        buttonPanel.add(deleteVendorButton);
         buttonPanel.add(addProductButton);
+        buttonPanel.add(deleteProductButton);
+
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
-       
+        
         add(panel);
 
-       
+        
         try {
             populateVendorTable();
             populateProductTable();
@@ -56,23 +65,17 @@ public class DEODashboardView extends JFrame {
             e.printStackTrace();
         }
 
-        setVisible(true);
+        
+        addVendorButton.addActionListener(e -> openAddVendorForm());
+        addProductButton.addActionListener(e -> openAddProductForm());
+        editVendorButton.addActionListener(e -> openEditVendorForm());
+        deleteVendorButton.addActionListener(e -> deleteSelectedVendor());
+        deleteProductButton.addActionListener(e -> deleteSelectedProduct());
 
-       
-        addVendorButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openAddVendorForm();
-            }
-        });// Action listener for adding new product
-        addProductButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openAddProductForm();
-            }
-        });
+        setVisible(true);
     }
 
+    
     private void populateVendorTable() throws SQLException {
         ResultSet vendors = controller.getVendors();
         vendorTable.setModel(buildTableModel(vendors));
@@ -84,7 +87,7 @@ public class DEODashboardView extends JFrame {
         productTable.setModel(buildProductTableModel(products));
     }
 
-   
+    
     private static TableModel buildTableModel(ResultSet rs) throws SQLException {
         ResultSetMetaData metaData = rs.getMetaData();
         int columnCount = metaData.getColumnCount();
@@ -109,14 +112,17 @@ public class DEODashboardView extends JFrame {
     
     private static TableModel buildProductTableModel(ResultSet rs) throws SQLException {
         Vector<String> columnNames = new Vector<>();
+        columnNames.add("Product ID");
         columnNames.add("Product Name");
         columnNames.add("Category");
         columnNames.add("Sale Price");
         columnNames.add("Vendor");
+        
 
         Vector<Vector<Object>> data = new Vector<>();
         while (rs.next()) {
             Vector<Object> row = new Vector<>();
+            row.add(rs.getInt("Product_id"));
             row.add(rs.getString("Product_Name"));
             row.add(rs.getString("Category"));
             row.add(rs.getDouble("Sale_Price"));
@@ -127,7 +133,6 @@ public class DEODashboardView extends JFrame {
         return new DefaultTableModel(data, columnNames);
     }
 
- 
     private void openAddVendorForm() {
         JFrame addVendorFrame = new JFrame("Add New Vendor");
         addVendorFrame.setSize(400, 300);
@@ -239,7 +244,7 @@ public class DEODashboardView extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    int vendorId = vendorComboBox.getSelectedIndex() + 1; // Assuming vendor IDs start from 1
+                    int vendorId = vendorComboBox.getSelectedIndex() + 1; 
                     boolean success = controller.addProduct(vendorId, productNameField.getText(), categoryField.getText(),
                             Double.parseDouble(originalPriceField.getText()), Double.parseDouble(salePriceField.getText()),
                             Double.parseDouble(pricePerUnitField.getText()), Double.parseDouble(pricePerCartonField.getText()));
@@ -247,7 +252,7 @@ public class DEODashboardView extends JFrame {
                     if (success) {
                         JOptionPane.showMessageDialog(null, "Product added successfully!");
                         addProductFrame.dispose();
-                        populateProductTable(); // Refresh product table
+                        populateProductTable(); 
                     } else {
                         JOptionPane.showMessageDialog(null, "Error adding product!");
                     }
@@ -257,13 +262,109 @@ public class DEODashboardView extends JFrame {
             }
         });
     }
+    
+    private void openEditVendorForm() {
+        int selectedRow = vendorTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Select a vendor to edit.");
+            return;
+        }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new DEODashboardView().setVisible(true);
+        String vendorName = vendorTable.getValueAt(selectedRow, 1).toString();
+        String contact = vendorTable.getValueAt(selectedRow, 2).toString();
+        String address = vendorTable.getValueAt(selectedRow, 3).toString();
+
+        JFrame editVendorFrame = new JFrame("Edit Vendor");
+        editVendorFrame.setSize(400, 300);
+        editVendorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        editVendorFrame.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(4, 2));
+
+        JTextField vendorNameField = new JTextField(vendorName);
+        JTextField contactField = new JTextField(contact);
+        JTextField addressField = new JTextField(address);
+        JButton saveButton = new JButton("Save Changes");
+
+        panel.add(new JLabel("Vendor Name:"));
+        panel.add(vendorNameField);
+        panel.add(new JLabel("Contact:"));
+        panel.add(contactField);
+        panel.add(new JLabel("Address:"));
+        panel.add(addressField);
+        panel.add(saveButton);
+
+        editVendorFrame.add(panel);
+        editVendorFrame.setVisible(true);
+
+        saveButton.addActionListener(e -> {
+            try {
+                boolean success = controller.updateVendor(
+                        Integer.parseInt(vendorTable.getValueAt(selectedRow, 0).toString()),
+                        vendorNameField.getText(),
+                        contactField.getText(),
+                        addressField.getText()
+                );
+
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Vendor updated successfully!");
+                    editVendorFrame.dispose();
+                    populateVendorTable();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error updating vendor.");
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
         });
+    }
+
+    
+    private void deleteSelectedVendor() {
+        int selectedRow = vendorTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Select a vendor to delete.");
+            return;
+        }
+
+        int vendorId = Integer.parseInt(vendorTable.getValueAt(selectedRow, 0).toString());
+        try {
+            boolean success = controller.deleteVendor(vendorId);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Vendor deleted successfully!");
+                populateVendorTable();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error deleting vendor.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+   
+    private void deleteSelectedProduct() {
+        int selectedRow = productTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Select a product to delete.");
+            return;
+        }
+
+        int productId = Integer.parseInt(productTable.getValueAt(selectedRow, 0).toString());
+        try {
+            boolean success = controller.deleteProduct(productId);
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Product deleted successfully!");
+                populateProductTable();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error deleting product.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(DEODashboardView::new);
     }
 }
