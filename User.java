@@ -10,15 +10,18 @@ import java.sql.Statement;
  public   class User 
 {protected String userID;
 Connection conn;
-DBConnection db;
     protected String name;
     protected String email;
     protected String password;
     protected String type;
+    private String cbcode;
+ String cmail;
+  
 protected Double salary;
  public User() {
-     db= new DBConnection();
-        this.conn = (Connection) db.getConnection();
+    this.conn = DBConnection.getInstance().getConnection();
+
+        
     }
 public User(String id , String name , String email, String pass, String type,Double salary)
 {
@@ -29,6 +32,7 @@ public User(String id , String name , String email, String pass, String type,Dou
     this.type=type;
     this.salary=salary;
 }
+
 public void createTable() throws SQLException
 {
     // Super Admin table
@@ -139,6 +143,19 @@ public void createTable() throws SQLException
             "FOREIGN KEY (Branch_Code) REFERENCES Branch(Branch_Code) ON DELETE CASCADE," +"FOREIGN KEY (Product_id) REFERENCES Product(Product_id) ON DELETE CASCADE)";
     s=conn.createStatement();
     s.executeUpdate(sql7);
+    //bill table
+    String sql11="CREATE TABLE IF NOT EXISTS bill (" +
+"    bill_id INT AUTO_INCREMENT PRIMARY KEY," +
+"    customer_name VARCHAR(100) NOT NULL," +
+"    product_name VARCHAR(100) NOT NULL," +
+"    quantity INT NOT NULL," +
+"    price DOUBLE NOT NULL,"+
+"    discounted_price DOUBLE NOT NULL,"+
+"    total_price DOUBLE NOT NULL," +
+"created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+     s=conn.createStatement();
+    s.executeUpdate(sql11);
+           
     
     
 }
@@ -146,7 +163,7 @@ public void createTable() throws SQLException
         
 
 public boolean login(String email , String pass, String type) throws SQLException
-{
+{ 
     if(type.equals("Super Admin"))
     {createTable();
         String query= "Select * from superAdmin where email = ? AND password = ?";
@@ -178,13 +195,46 @@ else
     {
         String query= "Select * from cashier where email = ? AND password = ?";
          PreparedStatement ps= conn.prepareStatement(query);
+         
         ps.setString(1, email);
-        ps.setString(2, pass);
+        ps.setString(2, pass); 
         ResultSet res = ps.executeQuery();
-        return res.next();  
+       
+       if (res.next()) {setCmail(email);
+    getBranchCodeOfCashier(email);
+    return true;
+} else {
+    System.out.println("In login method: cbcode not set");
+    return false;
+}
+
+       
     }
     
 }
+
+    public String getCmail() {
+        return cmail;
+    }
+
+    public void setCmail(String cmail) {
+        this.cmail = cmail;
+    }
+    public String getBranchCodeOfCashier(String email) throws SQLException {
+        String query = "SELECT Branch_Code FROM Cashier WHERE email = ?";
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setString(1, email);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            this.cbcode = rs.getString("Branch_Code");
+            return this.cbcode;
+        }
+        return cbcode;
+    }
+
+
+
+       
 public boolean isFirstLogin(String email, String type) throws SQLException {
     String query = "";
 
@@ -270,4 +320,4 @@ public boolean emailExists(String email,String role) throws SQLException
 }
 
 
-}
+} 

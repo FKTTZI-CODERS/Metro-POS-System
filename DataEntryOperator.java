@@ -50,19 +50,20 @@ public class DataEntryOperator extends User {
         return ps.executeUpdate() > 0;
     }
 
-    public boolean addProduct(int vendorId, String productName, String category, 
+    public boolean addProduct(int vendorId, String productName, String category, int quantity,
                                double originalPrice, double salePrice, double pricePerUnit, 
                                double pricePerCarton) throws SQLException {
-        String query = "INSERT INTO Product (Product_Name, Category, Original_Price, Sale_Price, " +
-                       "Price_per_Unit, Price_per_Carton, Vendor_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Product (Product_Name, Category, Original_Price,Stock_Quantity, Sale_Price, " +
+                       "Price_per_Unit, Price_per_Carton, Vendor_id) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
         PreparedStatement ps = conn.prepareStatement(query);
         ps.setString(1, productName);
         ps.setString(2, category);
         ps.setDouble(3, originalPrice);
-        ps.setDouble(4, salePrice);
-        ps.setDouble(5, pricePerUnit);
-        ps.setDouble(6, pricePerCarton);
-        ps.setInt(7, vendorId);  // Use Vendor_id as foreign key
+         ps.setInt(4, quantity);
+        ps.setDouble(5, salePrice);
+        ps.setDouble(6, pricePerUnit);
+        ps.setDouble(7, pricePerCarton);
+        ps.setInt(8, vendorId);  // Use Vendor_id as foreign key
         return ps.executeUpdate() > 0;
     }
 

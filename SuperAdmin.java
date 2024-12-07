@@ -1,8 +1,6 @@
 
 package metropos.model;
 
-import com.sun.jdi.connect.spi.Connection;
-import java.awt.List;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
