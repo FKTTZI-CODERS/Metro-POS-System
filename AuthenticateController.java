@@ -6,28 +6,39 @@ import javax.swing.JOptionPane;
 import metropos.model.DBConnection;
 import metropos.model.User;
 import metropos.view.BranchManagerDashboardView;
-import metropos.view.CashierDashboardView;
 import metropos.view.DEODashboardView; 
 import metropos.view.LoginView;
 import metropos.view.SuperAdminDashboardView;
+import metropos.view.CashierDashboardView;
 
 public class AuthenticateController {
     String email;
+
+    public String getEmail() {System.out.println(email);
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
     String password;
     String type;
     LoginView l;
     Connection conn;
-    DBConnection db;
+
     User u;
     SuperAdminDashboardView sa;
     CashierDashboardView c;
+    CashierController cc;
     BranchManagerDashboardView bm;
     DEODashboardView deo; 
 
     public AuthenticateController() {
-        db = new DBConnection();
-        this.conn = db.getConnection();
+       this.conn = DBConnection.getInstance().getConnection();
+
+      
         u = new User();
+        cc= new CashierController();
     }
 
     public void login(String e, String pass, String t) throws SQLException {
@@ -60,7 +71,7 @@ public class AuthenticateController {
                     return;
                 }
             } else { // Cashier role
-                if (u.login(e, pass, t)) {
+                if (u.login(e, pass, t)) {cc.setEmail(e);
                     JOptionPane.showMessageDialog(null, "Login successful");
                     isFirstLogin(e, "Cashier");
                 } else {

@@ -37,9 +37,9 @@ public class DEOController {
     }
 
     //adding a new product
-    public boolean addProduct(int vendorId, String productName, String category, double originalPrice, 
+    public boolean addProduct(int vendorId, String productName, String category,int quantity, double originalPrice, 
                                double salePrice, double pricePerUnit, double pricePerCarton) throws SQLException {
-        return model.addProduct(vendorId, productName, category, originalPrice, salePrice, pricePerUnit, pricePerCarton);
+        return model.addProduct(vendorId, productName, category,quantity, originalPrice, salePrice, pricePerUnit, pricePerCarton);
     }
 
     //updating an old product's information

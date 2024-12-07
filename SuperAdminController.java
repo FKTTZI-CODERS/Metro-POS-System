@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import metropos.model.SuperAdmin;
+import metropos.model.User;
 
 public class SuperAdminController 
 {String bcode;
@@ -13,6 +14,7 @@ String bcity;
 String bphone;
 String baddress;
 SuperAdmin s;
+User u;
 public SuperAdminController()
 {
     s= new SuperAdmin();
@@ -54,8 +56,9 @@ public SuperAdminController()
  else
  {
    if(s.createBranchManager(name, email, salary, code))
-   {
+   {u=new User();
         JOptionPane.showMessageDialog(null,"Branch Manager Created Successfully!");
+        u.increaseEmployeeCount(code);
         
    }
     else
