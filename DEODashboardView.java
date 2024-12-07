@@ -191,7 +191,7 @@ public class DEODashboardView extends JFrame {
         addProductFrame.setLocationRelativeTo(this);
 
         JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(8, 2));
+        panel.setLayout(new GridLayout(9, 2));
 
         
         JLabel vendorLabel = new JLabel("Select Vendor:");
@@ -209,6 +209,8 @@ public class DEODashboardView extends JFrame {
         JTextField productNameField = new JTextField();
         JLabel categoryLabel = new JLabel("Category:");
         JTextField categoryField = new JTextField();
+         JLabel quantityLabel = new JLabel("Quantity:");
+        JTextField quantityField = new JTextField();
         JLabel originalPriceLabel = new JLabel("Original Price:");
         JTextField originalPriceField = new JTextField();
         JLabel salePriceLabel = new JLabel("Sale Price:");
@@ -226,6 +228,8 @@ public class DEODashboardView extends JFrame {
         panel.add(productNameField);
         panel.add(categoryLabel);
         panel.add(categoryField);
+        panel.add(quantityLabel);
+        panel.add(quantityField);
         panel.add(originalPriceLabel);
         panel.add(originalPriceField);
         panel.add(salePriceLabel);
@@ -245,8 +249,9 @@ public class DEODashboardView extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 try {
                     int vendorId = vendorComboBox.getSelectedIndex() + 1; 
-                    boolean success = controller.addProduct(vendorId, productNameField.getText(), categoryField.getText(),
+                    boolean success = controller.addProduct(vendorId, productNameField.getText(), categoryField.getText(),Integer.parseInt(quantityField.getText()),
                             Double.parseDouble(originalPriceField.getText()), Double.parseDouble(salePriceField.getText()),
+                            
                             Double.parseDouble(pricePerUnitField.getText()), Double.parseDouble(pricePerCartonField.getText()));
 
                     if (success) {

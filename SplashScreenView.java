@@ -18,7 +18,7 @@ public class SplashScreenView extends JFrame {
         setLayout(new BorderLayout());
 
        
-        ImageIcon logoIcon = new ImageIcon("Metro-POS-System-main\\metropos\\images\\SplashScreenLogo.png");
+        ImageIcon logoIcon = new ImageIcon("src/metropos/image/SwiftPOS 1.png");
         int logoWidth = logoIcon.getIconWidth();
         int logoHeight = logoIcon.getIconHeight();
         int scaledWidth = 200;

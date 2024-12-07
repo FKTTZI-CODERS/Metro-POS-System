@@ -244,7 +244,7 @@ public class LoginView extends JFrame {
                     } else if (role.equalsIgnoreCase("Branch Manager")) {
                         authController.login(email, password, "Branch Manager");
                     } else if (role.equalsIgnoreCase("Data Entry Operator")) {
-                        authController.login(email, password, "DataEntryOperator");
+                        authController.login(email, password, "Data Entry Operator");
                     } else {
                         authController.login(email, password, "Cashier");
                     }

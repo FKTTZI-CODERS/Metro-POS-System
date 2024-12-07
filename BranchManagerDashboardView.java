@@ -29,7 +29,7 @@ public class BranchManagerDashboardView extends JFrame {
         setVisible(true);
     }
 
-    public void init() {
+    private void init() {
         addCashierButton = new JButton("Add Cashier");
         addCashierButton.addActionListener(new ActionListener() {
             @Override
@@ -61,7 +61,7 @@ public class BranchManagerDashboardView extends JFrame {
                 dispose();
             }
         });
-
+viewR= new JButton("View Reports");
         JPanel buttonPanel = new JPanel(new GridLayout(3, 0));
         buttonPanel.add(addCashierButton);
         buttonPanel.add(addDataEntryOperatorButton);
