@@ -1,14 +1,20 @@
 package metropos.view;
+
+import metropos.controller.AuthenticateController;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
+import java.awt.event.*;
+import java.sql.SQLException;
 
 public class LoginView extends JFrame {
 
+    private AuthenticateController authController;
+    private JTextField emailField;
+    private JPasswordField passwordField;
+    private JComboBox<String> roleDropdown;
+
     public LoginView() {
+        authController = new AuthenticateController();
         setTitle("Swift POS Login");
         setSize(1200, 700);
         setLocationRelativeTo(null);
@@ -77,7 +83,6 @@ public class LoginView extends JFrame {
                 BorderFactory.createLineBorder(new Color(250, 250, 250), 4),
                 BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
-
         signInPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         rightPanel.add(signInPanel);
 
@@ -103,7 +108,7 @@ public class LoginView extends JFrame {
         roleIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         rolePanel.add(roleIcon, BorderLayout.WEST);
 
-        JComboBox<String> roleDropdown = new JComboBox<>(new String[]{"Choose your role", "Super Admin", "Branch Manager", "Data Entry Operator", "Cashier"});
+        roleDropdown = new JComboBox<>(new String[]{"Choose your role", "Super Admin", "Branch Manager", "Data Entry Operator", "Cashier"});
         roleDropdown.setFont(new Font("Poppins", Font.PLAIN, 14));
         roleDropdown.setForeground(Color.decode("#8E9295"));
         roleDropdown.setBackground(Color.decode("#FAFAFA"));
@@ -117,10 +122,10 @@ public class LoginView extends JFrame {
         emailPanel.setBackground(Color.WHITE);
 
         JLabel emailIcon = new JLabel(new ImageIcon("Metro-POS-System-main\\metropos\\images\\Email.png"));
-        emailIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5)); 
+        emailIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         emailPanel.add(emailIcon, BorderLayout.WEST);
 
-        JTextField emailField = new JTextField("Email ID");
+        emailField = new JTextField("Email ID");
         emailField.setFont(new Font("Poppins", Font.PLAIN, 14));
         emailField.setForeground(Color.decode("#8E9295"));
         emailField.setBackground(Color.decode("#FAFAFA"));
@@ -149,10 +154,10 @@ public class LoginView extends JFrame {
         passwordPanel.setBackground(Color.WHITE);
 
         JLabel passwordIcon = new JLabel(new ImageIcon("Metro-POS-System-main\\metropos\\images\\LoginPassword.png"));
-        passwordIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5)); 
+        passwordIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         passwordPanel.add(passwordIcon, BorderLayout.WEST);
 
-        JPasswordField passwordField = new JPasswordField("Password");
+        passwordField = new JPasswordField("Password");
         passwordField.setFont(new Font("Poppins", Font.PLAIN, 14));
         passwordField.setForeground(Color.decode("#8E9295"));
         passwordField.setBackground(Color.decode("#FAFAFA"));
@@ -182,7 +187,7 @@ public class LoginView extends JFrame {
         eyeButton.setContentAreaFilled(false);
         eyeButton.setFocusPainted(false);
         eyeButton.setPreferredSize(new Dimension(30, 30));
-        
+
         eyeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -226,6 +231,79 @@ public class LoginView extends JFrame {
         gbc.gridwidth = 2;
         signInPanel.add(buttonPanel, gbc);
 
+        // Action listener for the sign-in button
+        signInButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                String role = (String) roleDropdown.getSelectedItem();
+                String email = emailField.getText();
+                String password = new String(passwordField.getPassword());
+                try {
+                    if (role.equalsIgnoreCase("Super Admin")) {
+                        authController.login(email, password, "Super Admin");
+                    } else if (role.equalsIgnoreCase("Branch Manager")) {
+                        authController.login(email, password, "Branch Manager");
+                    } else if (role.equalsIgnoreCase("Data Entry Operator")) {
+                        authController.login(email, password, "DataEntryOperator");
+                    } else {
+                        authController.login(email, password, "Cashier");
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        // Forgot Password functionality
+        forgotPassword.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                String email = JOptionPane.showInputDialog("Enter your email");
+                String role = JOptionPane.showInputDialog("Enter your role");
+                try {
+                    authController.forgotPass(role, email);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
         setVisible(true);
+    }
+
+    // Password change screen
+    public void changePassScreen(String email, String role) {
+        JFrame changeFrame = new JFrame("Change Password");
+        changeFrame.setBounds(0, 0, 400, 300);
+        JLabel display = new JLabel("Change Password");
+        JPanel passPanel = new JPanel(new GridLayout(3, 2));
+
+        JLabel newpasslb = new JLabel("New Password: ");
+        JLabel confirmpasslb = new JLabel("Confirm Password: ");
+        JPasswordField newpassfield = new JPasswordField();
+        JPasswordField confirmpassfield = new JPasswordField();
+        JButton change = new JButton("Change Password");
+        change.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                String newpass = new String(newpassfield.getPassword());
+                String confirmpass = new String(confirmpassfield.getPassword());
+                try {
+                    authController.changePass(newpass, confirmpass, email, role);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        passPanel.add(newpasslb);
+        passPanel.add(newpassfield);
+        passPanel.add(confirmpasslb);
+        passPanel.add(confirmpassfield);
+        changeFrame.add(change, BorderLayout.SOUTH);
+        changeFrame.add(display, BorderLayout.NORTH);
+        changeFrame.add(passPanel, BorderLayout.CENTER);
+        changeFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        changeFrame.setVisible(true);
     }
 }
