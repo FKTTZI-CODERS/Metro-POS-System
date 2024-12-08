@@ -1,12 +1,10 @@
 package metropos.view;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import metropos.controller.AuthenticateController;
 import metropos.controller.CashierController;
 
 public class CashierDashboardView extends JFrame {
@@ -52,40 +50,44 @@ public class CashierDashboardView extends JFrame {
     }
 
    private void generateBill() throws SQLException {
-    // Labels and input fields
     JLabel custNameLabel = new JLabel("Customer Name:");
     JLabel prodNameLabel = new JLabel("Product Name:");
     JLabel quantityLabel = new JLabel("Quantity:");
-
+JLabel paymentLabel = new JLabel("Payment Method:");
     JTextField custNameField = new JTextField();
     JTextField quantityField = new JTextField();
     ArrayList<String> availableProducts = controller.getAvailableProducts();
     JComboBox<String> prodNameCombo = new JComboBox<>(availableProducts.toArray(new String[0]));
-
+    ArrayList<String> availableMethods=new ArrayList<>();
+availableMethods.add("Cash");
+availableMethods.add("Credit Card");
+JComboBox<String> paymentbox= new JComboBox<>(availableMethods.toArray(new String[0]));
     // Table to display added products
     String[] columnNames = {"Product", "Quantity", "Price", "Discounted Price", "Total Price"};
     DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
     JTable productTable = new JTable(tableModel);
     JScrollPane tableScrollPane = new JScrollPane(productTable);
 
-    // Buttons
+  
     JButton addButton = new JButton("Add");
     JButton printButton = new JButton("Print");
     JButton cancelButton = new JButton("Cancel");
 
-    // Frame setup
+    
     JFrame billFrame = new JFrame("Generate Bill");
     billFrame.setLayout(new BorderLayout());
     billFrame.setSize(600, 400);
     billFrame.setLocationRelativeTo(null);
 
-    JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+    JPanel inputPanel = new JPanel(new GridLayout(4, 2, 10, 10));
     inputPanel.add(custNameLabel);
     inputPanel.add(custNameField);
     inputPanel.add(prodNameLabel);
     inputPanel.add(prodNameCombo);
     inputPanel.add(quantityLabel);
     inputPanel.add(quantityField);
+    inputPanel.add(paymentLabel);
+    inputPanel.add(paymentbox);
 
     JPanel buttonPanel = new JPanel(new FlowLayout());
     buttonPanel.add(addButton);
@@ -98,16 +100,21 @@ public class CashierDashboardView extends JFrame {
 
     billFrame.setVisible(true);
 
-    // Event Listeners
     addButton.addActionListener(e -> {
         try {
             String customerName = custNameField.getText();
             String productName = (String) prodNameCombo.getSelectedItem();
             int quantity = Integer.parseInt(quantityField.getText());
-AuthenticateController a= new AuthenticateController();
-String code=a.getCode();
-            System.out.println("In Cashier Dashboard: "+code);
+            String paymentName=(String)paymentbox.getSelectedItem();
+            controller.setPayment(paymentName);
+
+            
             Object[] productDetails = controller.addProductToBill(customerName, productName, quantity);
+            if(productDetails==null)
+            {
+                JOptionPane.showMessageDialog(null, "Cannot generate Bill for this product!");
+            return;
+            }
             tableModel.addRow(productDetails);
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(billFrame, "Quantity must be a valid number.");
@@ -145,7 +152,7 @@ String code=a.getCode();
     }
 
     private void logout() {
-        new LoginView(); // assuming LoginView is a class that handles user login
+        new LoginView(); 
         this.dispose();
     }
 }
