@@ -1,505 +1,556 @@
-
-package metropos.view;
-
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
-import metropos.controller.SuperAdminController;
+import javax.swing.*;
 
-public class SuperAdminDashboardView extends JFrame
-{JButton branch, bm,viewR,cancel;
-SuperAdminController s;
-    public SuperAdminDashboardView()
-    {s= new SuperAdminController();
+public class SuperAdminDashboardView extends JFrame {
+    JButton branch, bm, viewR, cancel;
+    SuperAdminController s;
+    String logoPath = "small.png"; 
+    
+    public SuperAdminDashboardView() {
+        s = new SuperAdminController();
         setTitle("Super Admin Dashboard");
-   init();
-   setBounds(0,0,500,600);
-   setDefaultCloseOperation(EXIT_ON_CLOSE);
-   setVisible(true);
+        init();
+        setBounds(0, 0, 600, 700);  
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setVisible(true);
     }
-    public void init()
-    {
-        branch= new JButton("Create Branch");
-       branch.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {
-              createBranch(); 
-           }
 
-            
-        });
-       cancel= new JButton("Cancel");
-       cancel.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {
-              dispose();
-           }
-
-            
-        });
-        bm= new JButton("Create Branch Manager");
-        bm.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {
-               try { 
-                   createBranchManager();
-               } catch (SQLException ex) {
-                   Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
-               }
-           }
-
-            
-        });
-        viewR= new JButton("View Reports");
-        viewR.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {   try {
-               viewReports();
-               } catch (SQLException ex) {
-                   Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
-               }
-               
-           }
-       });
-        JPanel btnPanel= new JPanel(new GridLayout(3,0));
+    public void init() {
+      
+        branch = createStyledButton("Create Branch");
+        bm = createStyledButton("Create Branch Manager");
+        viewR = createStyledButton("View Reports");
+        cancel = createStyledButton("Cancel");
+    
+       
+        JLabel logoLabel = createLogoLabel(logoPath);
+    
+      
+        JPanel btnPanel = new JPanel();
+        btnPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;  
+        gbc.gridy = 0; 
+        gbc.insets = new Insets(5, 10, 10, 10);  
+        btnPanel.setBackground(Color.white);
+        
+        btnPanel.add(branch, gbc);
+        
+        gbc.gridy++; 
+        btnPanel.add(bm, gbc);
+        
+        gbc.gridy++;
+        btnPanel.add(viewR, gbc);
+    
+       
+        JPanel cancelPanel = new JPanel();
+        cancelPanel.setOpaque(false);
+        cancelPanel.add(cancel);
+    
+        
         setLayout(new BorderLayout());
-        btnPanel.add(branch);
-        btnPanel.add(bm);
-        btnPanel.add(viewR);
-        add(new JLabel("--- Super Admin Dashboard ---"),BorderLayout.NORTH);
-        add(btnPanel,BorderLayout.CENTER);
-        add(cancel,BorderLayout.SOUTH);
+        add(logoLabel, BorderLayout.NORTH);
+        add(btnPanel, BorderLayout.CENTER); 
+        add(cancelPanel, BorderLayout.SOUTH);
+    
+        getContentPane().setBackground(Color.WHITE); 
     }
-    private void viewReports() throws SQLException
-    { 
-        String code=JOptionPane.showInputDialog("Enter the branch code");
-        if(s.viewReports(code))
-        {reportDuration(code);
-            
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(null,"Branch code does not exists!");
+    
+
+
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(316, 60)); 
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setBackground(new Color(108, 167, 255));  
+        button.setForeground(Color.WHITE);  
+        button.setFocusPainted(false);  
+        button.setBorder(BorderFactory.createEmptyBorder());  
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                handleButtonAction(text);
+            }
+        });
+        return button;
+    }
+
+ 
+    private JLabel createLogoLabel(String path) {
+        ImageIcon icon = new ImageIcon(path); 
+        Image img = icon.getImage();  
+    
+        
+        int originalWidth = img.getWidth(null);
+        int originalHeight = img.getHeight(null);
+    
+        int newWidth = 200; 
+        int newHeight = (int) ((double) originalHeight / originalWidth * newWidth);
+    
+      
+        Image resizedImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);  
+        icon = new ImageIcon(resizedImg);
+    
+        JLabel logoLabel = new JLabel(icon); 
+        logoLabel.setHorizontalAlignment(JLabel.CENTER);  
+        return logoLabel;
+    }
+    
+    
+    private void handleButtonAction(String action) {
+        switch (action) {
+            case "Create Branch":
+                createBranch();
+                break;
+            case "Create Branch Manager":
+                try {
+                    createBranchManager();
+                } catch (SQLException ex) {
+                    Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
+            case "View Reports":
+                try {
+                    viewReports();
+                } catch (SQLException ex) {
+                    Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
+            case "Cancel":
+                dispose();
+                break;
         }
     }
-    private void reportDuration(String code)
-    {dispose();
-        JFrame f= new JFrame("Reports Dashboard");
-        f.setBounds(0,0,500,600);
+    private String showBranchCodeDialog() {
+       
+        JDialog dialog = new JDialog(this, "Enter Branch Code", true); 
+        dialog.setLayout(new FlowLayout());
+    
+        JLabel label = new JLabel("Enter the Branch Code: ");
+        label.setFont(new Font("Arial", Font.PLAIN, 16));
+        JTextField textField = new JTextField(15);
+        textField.setFont(new Font("Arial", Font.PLAIN, 16));
+        textField.setPreferredSize(new Dimension(200, 30));
+    
+       
+        JButton okButton = new JButton("OK");
+        okButton.setFont(new Font("Arial", Font.BOLD, 14));
+        okButton.setBackground(new Color(108, 167, 255));
+        okButton.setForeground(Color.WHITE);
+        okButton.setPreferredSize(new Dimension(80, 40));
+    
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setFont(new Font("Arial", Font.BOLD, 14));
+        cancelButton.setBackground(new Color(255, 87, 34));
+        cancelButton.setForeground(Color.WHITE);
+        cancelButton.setPreferredSize(new Dimension(100, 40));
+    
+       
+        dialog.add(label);
+        dialog.add(textField);
+        dialog.add(okButton);
+        dialog.add(cancelButton);
+    
+      
+        okButton.addActionListener(e -> {
+            dialog.dispose(); 
+        });
+    
+        cancelButton.addActionListener(e -> {
+            textField.setText(""); 
+            dialog.dispose(); 
+        });
+    
+       
+        dialog.setSize(300, 150); 
+        dialog.setLocationRelativeTo(this); 
+        dialog.setVisible(true);  
+    
+        return textField.getText(); 
+    }
+    
+    private void viewReports() throws SQLException {
+        String code = showBranchCodeDialog();
+        if (code != null && !code.isEmpty()) {
+            if (s.viewReports(code)) {
+                reportDuration(code);
+            } else {
+                JOptionPane.showMessageDialog(null, "Branch code does not exist!");
+            }
+        }
+    }
+    
+    
+    private void reportDuration(String code) {
+        dispose();
+        JFrame f = new JFrame("Reports Dashboard");
+        f.setBounds(0, 0, 700, 600);
         f.setLayout(new BorderLayout());
-        JPanel p1= new JPanel(new GridLayout(5,1));
-        JButton today ,weekly, monthly, yearly,specific;
-        today= new JButton("Today");
-        weekly= new JButton("Weekly");
-        monthly=new JButton("Monthly");
-        yearly=new JButton("Yearly");
-        specific= new JButton("Specific Range");
+    
+
+        JPanel p1 = new JPanel(new GridLayout(5, 1, 10, 20));
+        p1.setOpaque(false);
+    
+        JButton today = createStyledButton("Today");
+        JButton weekly = createStyledButton("Weekly");
+        JButton monthly = createStyledButton("Monthly");
+        JButton yearly = createStyledButton("Yearly");
+        JButton specific = createStyledButton("Specific Range");
+    
         p1.add(today);
         p1.add(weekly);
         p1.add(monthly);
         p1.add(yearly);
         p1.add(specific);
-        JLabel displaytxt=new JLabel("Report Time Menu");
-        f.add(displaytxt,BorderLayout.NORTH);
-        f.add(p1,BorderLayout.CENTER);
-        
-        
-        today.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {reportType(code, "Today");}
-       });
-         weekly.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {reportType(code, "Weekly");}
-       });
-         monthly.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {reportType(code, "Monthly");}
-       });
-         yearly.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {reportType(code, "Yearly");}
-       });
-          specific.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {reportType(code, "Specific Range");}
-       });
-         f.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    
+        JLabel displaytxt = new JLabel("Report Time Menu", JLabel.CENTER);
+        displaytxt.setFont(new Font("Arial", Font.BOLD, 18));
+    
+        f.add(displaytxt, BorderLayout.NORTH);
+        f.add(p1, BorderLayout.CENTER);
+    
+
+        today.addActionListener(e -> reportType(code, "Today"));
+        weekly.addActionListener(e -> reportType(code, "Weekly"));
+        monthly.addActionListener(e -> reportType(code, "Monthly"));
+        yearly.addActionListener(e -> reportType(code, "Yearly"));
+        specific.addActionListener(e -> reportType(code, "Specific Range"));
+    
+        f.setDefaultCloseOperation(EXIT_ON_CLOSE);
         f.setVisible(true);
     }
-    public void reportType(String code, String duration)
-    {dispose();
-        JFrame f= new JFrame("Reports Type");
-        f.setBounds(0,0,500,600);
+    
+    private void reportType(String code, String duration) {
+        dispose();
+        JFrame f = new JFrame("Reports Type");
+        f.setBounds(0, 0, 500, 600);
         f.setLayout(new BorderLayout());
-        JPanel p1= new JPanel(new GridLayout(3,1));
-        JButton Sales, RemainingStock, Profit;
-        
-       Sales= new JButton("Sales");
-        RemainingStock= new JButton("Remaining Stock");
-        Profit=new JButton("Profit");
+    
+        JPanel p1 = new JPanel(new GridLayout(3, 1, 10, 20));
+        p1.setOpaque(false);
+    
+        JButton Sales = createStyledButton("Sales");
+        JButton RemainingStock = createStyledButton("Remaining Stock");
+        JButton Profit = createStyledButton("Profit");
+    
         p1.add(Sales);
         p1.add(RemainingStock);
         p1.add(Profit);
-        JLabel displaytxt=new JLabel("Report Type Menu");
-        f.add(displaytxt,BorderLayout.NORTH);
-        f.add(p1,BorderLayout.CENTER);
-        
-        
-        Profit.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {   try {if(duration.equalsIgnoreCase("Today")){
-               profitReport(code, "Today",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Weekly"))
-           {
-               profitReport(code, "Weekly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Monthly"))
-           {
-                profitReport(code, "Monthly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Yearly"))
-           {profitReport(code, "Yearly",null,null);
-               
-           }
-           else 
-           { String startDate = JOptionPane.showInputDialog(null, "Enter the start date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
-                String endDate = JOptionPane.showInputDialog(null, "Enter the end date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
-
-                // Validate that the user provided both dates
-                if (startDate != null && !startDate.trim().isEmpty() &&
-                    endDate != null && !endDate.trim().isEmpty()) {
-                    profitReport(code, "Specific Range", startDate, endDate);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Both start and end dates are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                }
-               
-              
-           }
-               } catch (SQLException ex) {
-                   Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
-               }
-}
-       });
-        RemainingStock.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {if(duration.equalsIgnoreCase("Today")){
-               remainingstockReport(code, "Today",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Weekly"))
-           {
-               remainingstockReport(code, "Weekly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Monthly"))
-           {
-                remainingstockReport(code, "Monthly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Yearly"))
-           {remainingstockReport(code, "Yearly",null,null);
-               
-           }
-           else 
-           { String startDate = JOptionPane.showInputDialog(null, "Enter the start date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
-                String endDate = JOptionPane.showInputDialog(null, "Enter the end date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
-
-                // Validate that the user provided both dates
-                if (startDate != null && !startDate.trim().isEmpty() &&
-                    endDate != null && !endDate.trim().isEmpty()) {
-                    remainingstockReport(code, "Specific Range", startDate, endDate);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Both start and end dates are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                }}
-       }
-});
-               
-        Sales.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {if(duration.equalsIgnoreCase("Today")){
-               salesReport(code, "Today",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Weekly"))
-           {
-              salesReport(code, "Weekly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Monthly"))
-           {
-                salesReport(code, "Monthly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Yearly"))
-           {salesReport(code, "Yearly",null,null);
-               
-           }
-           else 
-           { String startDate = JOptionPane.showInputDialog(null, "Enter the start date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
-                String endDate = JOptionPane.showInputDialog(null, "Enter the end date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
-
-                // Validate that the user provided both dates
-                if (startDate != null && !startDate.trim().isEmpty() &&
-                    endDate != null && !endDate.trim().isEmpty()) {
-                    salesReport(code, "Specific Range", startDate, endDate);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Both start and end dates are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                }}
-       }
-       });
-         f.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        f.setVisible(true);
-        
-    }
-    private void profitReport(String code, String duration,String start,String end) throws SQLException
-    {dispose();
-    JFrame f= new JFrame(duration+" Profit Report");
-    f.setBounds(0,0,500,600);
-    f.setLayout(new BorderLayout());
-   JLabel displayMsg= new JLabel("Profit Report for Branch: "+ code + " ( "+duration+" ) ",JLabel.CENTER);
-    f.add(displayMsg,BorderLayout.NORTH);
-String[] profitreport={"Product Name", "Profit"};
-Object[][] profit= s.getProfit(code,duration,start,end);
-JTable t= new JTable(profit,profitreport);
-JScrollPane scrollpane= new JScrollPane(t);
-f.add(scrollpane,BorderLayout.CENTER);
-
-JButton back = new JButton("Back");
-back.addActionListener(new ActionListener()
-{
-    @Override
-    public void actionPerformed(ActionEvent ae)
-    {
-        reportType(code,duration);
-        f.dispose();
-    }
-    });
-f.add(back,BorderLayout.SOUTH);
-f.setDefaultCloseOperation(EXIT_ON_CLOSE);
-f.setVisible(true); 
-}
-    private void remainingstockReport(String code,String duration,String start,String end)
-    {dispose();
-    JFrame f= new JFrame(duration+" Remaining Stock Report");
-    f.setBounds(0,0,500,600);
-    f.setLayout(new BorderLayout());
-   JLabel displayMsg= new JLabel("Remaining Stock Report for Branch: "+ code + " ( "+duration+" ) ",JLabel.CENTER);
-    f.add(displayMsg,BorderLayout.NORTH);
-String[] report={"Product Name", "Category", "Remaining Quantity"};
-Object[][] stock= s.getRemainingStockData(code,duration,start,end);
-JTable t= new JTable(stock,report);
-JScrollPane scrollpane= new JScrollPane(t);
-f.add(scrollpane,BorderLayout.CENTER);
-
-JButton back = new JButton("Back");
-back.addActionListener(new ActionListener()
-{
-    @Override
-    public void actionPerformed(ActionEvent ae)
-    {
-        reportType(code,duration);
-        f.dispose();
-    }
-    });
-f.add(back,BorderLayout.SOUTH);
-f.setDefaultCloseOperation(EXIT_ON_CLOSE);
-f.setVisible(true); 
-        
-    }
-    private void salesReport(String code, String duration,String start,String end)
-    {dispose();
-    JFrame f= new JFrame(duration+" Sales Report");
-    f.setBounds(0,0,500,600);
-    f.setLayout(new BorderLayout());
-   JLabel displayMsg= new JLabel("Sales Report for Branch: "+ code + " ( "+duration+" ) ",JLabel.CENTER);
-    f.add(displayMsg,BorderLayout.NORTH);
-String[] report={"Product Name", "Quantity Sold", "Total Sales"};
-Object[][] sales= s.getSalesData(code,duration,start,end);
-JTable t= new JTable(sales,report);
-JScrollPane scrollpane= new JScrollPane(t);
-f.add(scrollpane,BorderLayout.CENTER);
-
-JButton back = new JButton("Back");
-back.addActionListener(new ActionListener()
-{
-    @Override
-    public void actionPerformed(ActionEvent ae)
-    {
-        reportType(code,duration);
-        f.dispose();
-    }
-    });
-f.add(back,BorderLayout.SOUTH);
-f.setDefaultCloseOperation(EXIT_ON_CLOSE);
-f.setVisible(true);   
-    }
-    private void createBranch() 
-    {dispose();
-    cancel= new JButton("Cancel");
-    JPanel btnpanel= new JPanel(new FlowLayout());
-    JLabel bcode,bname,city,address,phone;
-JTextField codeField,nameField,phoneField,addressField;
-   JFrame sa= new JFrame("Create Branch Portal");
-   sa.setLayout(new BorderLayout());
-   JButton done = new JButton("Done");
-  
-   bcode= new JLabel("Branch Code: ");
-   codeField= new JTextField();
-   bname= new JLabel("Branch Name: ");
-   nameField= new JTextField();
-   address=new JLabel("Address: ");
-   addressField= new JTextField();
-   phone=new JLabel("Phone: ");
-   phoneField= new JTextField();
-   city= new JLabel("City: ");
-   String[] cities= {"Lahore", "Karachi","Islamabad","Rawalpindi","Quetta","Peshawar","Faisalabad","Multan"};
-   JComboBox<String> citycombo = new JComboBox<>(cities);
-       JPanel branchpanel;
-  branchpanel= new JPanel(new  GridLayout(6,2));
-   branchpanel.add(bcode);
-   branchpanel.add(codeField);
-   branchpanel.add(bname);
-   branchpanel.add(nameField);
-   branchpanel.add(address);
-   branchpanel.add(addressField);
-   branchpanel.add(phone);
-   branchpanel.add(phoneField);
-   branchpanel.add(city);
-   branchpanel.add(citycombo);
-  btnpanel.add(cancel);
-  btnpanel.add(done);
-   JLabel title= new JLabel("--- Create a Branch ---");
-   sa.add(title,BorderLayout.NORTH);
-   sa.add(branchpanel,BorderLayout.CENTER);
-   sa.add(btnpanel,BorderLayout.SOUTH);
-   cancel.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {sa.dispose();
-           new SuperAdminDashboardView();
-           }
-           });
-   done.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           { String getcode=codeField.getText();
-   String getname=nameField.getText();
-   String getaddress= addressField.getText();
-   String getphone=phoneField.getText();
-   String getCity=(String)citycombo.getSelectedItem();
-               try {
-                   s.createBranch(getcode, getname, getCity, getphone, getaddress);
-               } catch (SQLException ex) {
-                   Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
-               }
-           }
-   });
-   sa. setBounds(0,0,500,600);
-   sa.setDefaultCloseOperation(EXIT_ON_CLOSE);
-   sa.setVisible(true);
-   }
-    private void createBranchManager() throws SQLException
-    {dispose();
-       JLabel bmname,bmemail,bcode,salary;
-       JTextField nameField,emailField,salaryField;
-       JComboBox<String> branchcodeBox;
-       ArrayList<String> availableCodes=s.getAvailableCodes();
-       branchcodeBox=new JComboBox<>(availableCodes.toArray(new String[0]));
-        JFrame sa= new JFrame("Create Branch Portal");
-        JPanel bmpanel= new JPanel(new GridLayout(5,2,10,10));
-        bmname= new JLabel("Branch Manager Name: ");
-        bmpanel.add(bmname);
-        nameField=new JTextField();
-         bmpanel.add(nameField);
-         bmemail= new JLabel("Email: ");
-         bmpanel.add(bmemail);
-         emailField= new JTextField();
-         bmpanel.add(emailField);
-         bcode= new JLabel("Branch Code: ");
-         bmpanel.add(bcode);
-         bmpanel.add(branchcodeBox);
-         salary= new JLabel("Salary: ");
-         bmpanel.add(salary);
-         salaryField= new JTextField();
-         bmpanel.add(salaryField);
-         
-   sa.setLayout(new BorderLayout());
-   JButton done = new JButton("Done");
-   JPanel btnpanel= new JPanel(new FlowLayout());
-   cancel= new JButton("Cancel");
-   btnpanel.add(cancel);
-   btnpanel.add(done);
-   sa.add(new JLabel("--- Branch Manager Form ---"),BorderLayout.NORTH);
-   sa.add(bmpanel,BorderLayout.CENTER);
-   sa.add(btnpanel,BorderLayout.SOUTH);
-   sa. setBounds(0,0,500,600);
-   sa.setDefaultCloseOperation(EXIT_ON_CLOSE);
-   sa.setVisible(true);
-   cancel.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {sa.dispose();
-           new SuperAdminDashboardView();
-           }
-           });
-   done.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {String getname=nameField.getText();
-           String getemail=emailField.getText();
-           String getSalary=salaryField.getText();
-             String getcode=(String)branchcodeBox.getSelectedItem();
-               try {
-                   s.createBranchManager(getname,getemail,getSalary,getcode);
-               } catch (SQLException ex) {
-                   Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
-               }
-           }
-  
     
-    }); 
- 
-}
-}
+        JLabel displaytxt = new JLabel("Report Type Menu", JLabel.CENTER);
+        displaytxt.setFont(new Font("Arial", Font.BOLD, 18));
+    
+        f.add(displaytxt, BorderLayout.NORTH);
+        f.add(p1, BorderLayout.CENTER);
+    
+      
+        Profit.addActionListener(e -> {
+            try {
+                profitReport(code, duration, null, null);
+            } catch (SQLException ex) {
+                Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        RemainingStock.addActionListener(e -> {
+            try {
+                remainingstockReport(code, duration, null, null);
+            } catch (SQLException ex) {
+                Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        Sales.addActionListener(e -> {
+            try {
+                salesReport(code, duration, null, null);
+            } catch (SQLException ex) {
+                Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+    
+        f.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        f.setVisible(true);
+    }
+    
+    private void profitReport(String code, String duration, String start, String end) throws SQLException {
+        dispose();
+        JFrame f = new JFrame(duration + " Profit Report");
+        f.setBounds(0, 0, 500, 600);
+        f.setLayout(new BorderLayout());
+    
+        JLabel displayMsg = new JLabel("Profit Report for Branch: " + code + " (" + duration + ")", JLabel.CENTER);
+        displayMsg.setFont(new Font("Arial", Font.BOLD, 18));
+        f.add(displayMsg, BorderLayout.NORTH);
+    
+        String[] profitreport = {"Product Name", "Profit"};
+        Object[][] profit = s.getProfit(code, duration, start, end);
+        JTable t = new JTable(profit, profitreport);
+        JScrollPane scrollpane = new JScrollPane(t);
+        f.add(scrollpane, BorderLayout.CENTER);
+    
+        JButton back = createStyledButton("Back");
+        back.addActionListener(ae -> {
+            reportType(code, duration);
+            f.dispose();
+        });
+        f.add(back, BorderLayout.SOUTH);
+    
+        f.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        f.setVisible(true);
+    }
+    
+    private void remainingstockReport(String code, String duration, String start, String end) throws SQLException {
+        dispose();
+        JFrame f = new JFrame(duration + " Remaining Stock Report");
+        f.setBounds(0, 0, 500, 600);
+        f.setLayout(new BorderLayout());
+    
+        JLabel displayMsg = new JLabel("Remaining Stock Report for Branch: " + code + " (" + duration + ")", JLabel.CENTER);
+        displayMsg.setFont(new Font("Arial", Font.BOLD, 18));
+        f.add(displayMsg, BorderLayout.NORTH);
+    
+        String[] report = {"Product Name", "Category", "Remaining Quantity"};
+        Object[][] stock = s.getRemainingStockData(code, duration, start, end);
+        JTable t = new JTable(stock, report);
+        JScrollPane scrollpane = new JScrollPane(t);
+        f.add(scrollpane, BorderLayout.CENTER);
+    
+        JButton back = createStyledButton("Back");
+        back.addActionListener(ae -> {
+            reportType(code, duration);
+            f.dispose();
+        });
+        f.add(back, BorderLayout.SOUTH);
+    
+        f.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        f.setVisible(true);
+    }
+    
+    private void salesReport(String code, String duration, String start, String end) throws SQLException {
+        dispose();
+        JFrame f = new JFrame(duration + " Sales Report");
+        f.setBounds(0, 0, 700, 600);
+        f.setLayout(new BorderLayout());
+    
+        JLabel displayMsg = new JLabel("Sales Report for Branch: " + code + " (" + duration + ")", JLabel.CENTER);
+        displayMsg.setFont(new Font("Arial", Font.BOLD, 18));
+        f.add(displayMsg, BorderLayout.NORTH);
+    
+        String[] report = {"Product Name", "Quantity Sold", "Total Sales"};
+        Object[][] sales = s.getSalesData(code, duration, start, end);
+        JTable t = new JTable(sales, report);
+        JScrollPane scrollpane = new JScrollPane(t);
+        f.add(scrollpane, BorderLayout.CENTER);
+    
+        JButton back = createStyledButton("Back");
+        back.addActionListener(ae -> {
+            reportType(code, duration);
+            f.dispose();
+        });
+        f.add(back, BorderLayout.SOUTH);
+    
+        f.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        f.setVisible(true);
+    }
+    
 
+
+    private void createBranch() {
+        dispose();
+        cancel = createStyledButton("Cancel"); 
+        JButton done = createStyledButton("Done");  
+        JPanel btnPanel = new JPanel();
+        btnPanel.setOpaque(false);
+        btnPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));  
+    
+
+        JLabel title = new JLabel("--- Create a Branch ---");
+        title.setFont(new Font("Arial", Font.BOLD, 20));
+        title.setForeground(Color.gray);
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+    
+        JLabel bcode = new JLabel("Branch Code: ");
+        bcode.setFont(new Font("Arial", Font.PLAIN, 14));
+        JTextField codeField = new JTextField();
+        codeField.setPreferredSize(new Dimension(200, 30));
+        codeField.setFont(new Font("Arial", Font.PLAIN, 14));
+    
+        JLabel bname = new JLabel("Branch Name: ");
+        bname.setFont(new Font("Arial", Font.PLAIN, 14));
+        JTextField nameField = new JTextField();
+        nameField.setPreferredSize(new Dimension(200, 30));
+        nameField.setFont(new Font("Arial", Font.PLAIN, 14));
+    
+        JLabel address = new JLabel("Address: ");
+        address.setFont(new Font("Arial", Font.PLAIN, 14));
+        JTextField addressField = new JTextField();
+        addressField.setPreferredSize(new Dimension(200, 30));
+        addressField.setFont(new Font("Arial", Font.PLAIN, 14));
+    
+        JLabel phone = new JLabel("Phone: ");
+        phone.setFont(new Font("Arial", Font.PLAIN, 14));
+        JTextField phoneField = new JTextField();
+        phoneField.setPreferredSize(new Dimension(200, 30));
+        phoneField.setFont(new Font("Arial", Font.PLAIN, 14));
+    
+        JLabel city = new JLabel("City: ");
+        city.setFont(new Font("Arial", Font.PLAIN, 14));
+        String[] cities = {"Lahore", "Karachi", "Islamabad", "Rawalpindi", "Quetta", "Peshawar", "Faisalabad", "Multan"};
+        JComboBox<String> cityCombo = new JComboBox<>(cities);
+        cityCombo.setFont(new Font("Arial", Font.PLAIN, 14));
+        cityCombo.setPreferredSize(new Dimension(200, 30));
+    
+ 
+        JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 20));
+        formPanel.setOpaque(false);
+        formPanel.add(bcode);
+        formPanel.add(codeField);
+        formPanel.add(bname);
+        formPanel.add(nameField);
+        formPanel.add(address);
+        formPanel.add(addressField);
+        formPanel.add(phone);
+        formPanel.add(phoneField);
+        formPanel.add(city);
+        formPanel.add(cityCombo);
+    
+      
+        btnPanel.add(cancel);
+        btnPanel.add(done); 
+    
+    
+        JFrame sa = new JFrame("Create Branch Portal");
+        sa.setLayout(new BorderLayout());
+        sa.add(title, BorderLayout.NORTH);
+        sa.add(formPanel, BorderLayout.CENTER);
+        sa.add(btnPanel, BorderLayout.SOUTH);
+    
+      
+        cancel.addActionListener(ae -> {
+            sa.dispose();
+            new SuperAdminDashboardView();
+        });
+    
+        done.addActionListener(ae -> {
+            String getcode = codeField.getText();
+            String getname = nameField.getText();
+            String getaddress = addressField.getText();
+            String getphone = phoneField.getText();
+            String getCity = (String) cityCombo.getSelectedItem();
+            try {
+                s.createBranch(getcode, getname, getCity, getphone, getaddress);
+            } catch (SQLException ex) {
+                Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+    
+        sa.setBounds(0, 0, 700, 600);
+        sa.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        sa.setVisible(true);
+       
+    }
+    
+   
+    private void createBranchManager() throws SQLException {
+        dispose();
+        JLabel bmname, bmemail, bcode, salary;
+        JTextField nameField, emailField, salaryField;
+        JComboBox<String> branchcodeBox;
+        ArrayList<String> availableCodes = s.getAvailableCodes();
+        branchcodeBox = new JComboBox<>(availableCodes.toArray(new String[0]));
+        branchcodeBox.setFont(new Font("Arial", Font.PLAIN, 14));
+        branchcodeBox.setPreferredSize(new Dimension(200, 30));
+    
+  
+        JFrame sa = new JFrame("Create Branch Manager Portal");
+    
+ 
+        JPanel bmpanel = new JPanel(new GridLayout(5, 2, 10, 20));
+        bmpanel.setOpaque(false);
+    
+
+        bmname = new JLabel("Branch Manager Name: ");
+        bmname.setFont(new Font("Arial", Font.PLAIN, 14));
+        nameField = new JTextField();
+        styleTextField(nameField);
+    
+        bmemail = new JLabel("Email: ");
+        bmemail.setFont(new Font("Arial", Font.PLAIN, 14));
+        emailField = new JTextField();
+        styleTextField(emailField);
+    
+        bcode = new JLabel("Branch Code: ");
+        bcode.setFont(new Font("Arial", Font.PLAIN, 14));
+    
+        salary = new JLabel("Salary: ");
+        salary.setFont(new Font("Arial", Font.PLAIN, 14));
+        salaryField = new JTextField();
+        styleTextField(salaryField);
+    
+     
+        bmpanel.add(bmname);
+        bmpanel.add(nameField);
+        bmpanel.add(bmemail);
+        bmpanel.add(emailField);
+        bmpanel.add(bcode);
+        bmpanel.add(branchcodeBox);
+        bmpanel.add(salary);
+        bmpanel.add(salaryField);
+    
+   
+        JButton done = createStyledButton("Done");
+        cancel = createStyledButton("Cancel");
+    
+        JPanel btnPanel = new JPanel(new FlowLayout());
+        btnPanel.setOpaque(false);
+        btnPanel.add(cancel);
+        btnPanel.add(done);
+    
+    
+        JLabel title = new JLabel("--- Branch Manager Form ---");
+        title.setForeground(Color.GRAY);
+        title.setFont(new Font("Arial", Font.BOLD, 20));
+        title.setHorizontalAlignment(SwingConstants.CENTER);
+    
+    
+        sa.setLayout(new BorderLayout());
+        sa.add(title, BorderLayout.NORTH);
+        sa.add(bmpanel, BorderLayout.CENTER);
+        sa.add(btnPanel, BorderLayout.SOUTH);
+    
+    
+        sa.setBounds(0, 0, 700, 600);
+        sa.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        sa.setVisible(true);
+    
+      
+        cancel.addActionListener(ae -> {
+            sa.dispose();
+            new SuperAdminDashboardView();
+        });
+    
+        done.addActionListener(ae -> {
+            String name = nameField.getText();
+            String email = emailField.getText();
+            String salaryText = salaryField.getText();
+            String branchCode = (String) branchcodeBox.getSelectedItem();
+            try {
+                s.createBranchManager(name, email, branchCode, salaryText);
+            } catch (SQLException ex) {
+                Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+    }
+    
+    private void styleTextField(JTextField textField) {
+        textField.setPreferredSize(new Dimension(200, 30));
+        textField.setFont(new Font("Arial", Font.PLAIN, 14));
+        textField.setBackground(new Color(255,255,255));  
+        textField.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 180), 1));  // Subtle border
+    }
+    
+  
+}
