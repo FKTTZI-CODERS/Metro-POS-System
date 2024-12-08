@@ -11,7 +11,15 @@ import java.util.ArrayList;
 public class CashierController {
     private CashierModel model;
     private User u;
-  
+  static String payment="";
+
+    public synchronized static String getPayment() {
+        return payment;
+    }
+
+    public static void setPayment(String payment) {
+        CashierController.payment = payment;
+    }
 static String  email="";
     public CashierController() {
         model = new CashierModel();
@@ -39,7 +47,7 @@ static String  email="";
         }
 
         double price = model.getProductPrice(productName);
-        double tax = 0.1 * price * quantity; // 10% tax
+        double tax = 0.1 * price * quantity;
         double totalPrice = (price * quantity) + tax;
        
     double discountedprice = model.getDiscountedPrice(productName);
@@ -48,18 +56,30 @@ static String  email="";
         model.addBillEntry(customerName,productName, quantity, price,discountedPrice , totalPrice);
     }
     public Object[] addProductToBill(String customerName, String productName, int quantity) throws SQLException {
+        if(customerName.isEmpty() || productName.isEmpty()|| quantity <=0)
+        {
+            JOptionPane.showMessageDialog(null, "Please fill in all blank fields");
+            return null;
+        }
+        if(model.checkQuantity(productName)==0)
+        {
+            JOptionPane.showMessageDialog(null, "Stock not availble currently");
+            return null;
+        }
+        if(quantity>model.checkQuantity(productName))
+        {
+            JOptionPane.showMessageDialog(null, "Quantity asked cannot be greater than the available quantity");
+            return null;
+        }
     double price = model.getProductPrice(productName);
     double discountedPrice = model.getDiscountedPrice(productName);
     double totalPrice = discountedPrice * quantity;
 
-    // Update Bill Table
     model.addBillEntry(customerName, productName, quantity, price,discountedPrice, totalPrice);
 
-    // Update Sales Table
-    
     model.addSalesEntry(customerName, productName, quantity, totalPrice);
 
-    // Update Stock Table
+    
     model.updateStock(productName, quantity);
 
     return new Object[]{productName, quantity, price, discountedPrice, totalPrice};
@@ -72,8 +92,8 @@ static String  email="";
 
     public void addProductToSalesTable(String customerName, String productName, int quantity,String email) throws SQLException {String mail=email;
         double price = model.getProductPrice(productName);
-        double discount = 0; // Assuming no discount for simplicity
-        double taxRate = 0.1; // 10% tax
+        double discount = 0; 
+        double taxRate = 0.1;
         double tax = price * quantity * taxRate;
         double totalPrice = (price * quantity) + tax;
 
@@ -87,9 +107,9 @@ static String  email="";
    public void generateReceipt(String customerName) throws SQLException {
     ArrayList<Object[]> billDetails = model.getBillDetails(customerName);
 
-    StringBuilder receipt = new StringBuilder("Receipt for " + customerName + ":\n\n");
+    StringBuilder receipt = new StringBuilder("--------- Receipt for " + customerName + " -------\n\n");
     for (Object[] detail : billDetails) {
-        receipt.append(String.format("Product: %s | Quantity: %d | Total Price: %.2f\n", detail[0], detail[1], detail[4]));
+        receipt.append(String.format("\nProduct: %s  |  Quantity: %d  |  Total Price: %.2f  |  Payment Method: %s\n", detail[0], detail[1], detail[4], getPayment()));
     }
 
     receipt.append("\nThank you for shopping with us!");
@@ -102,7 +122,7 @@ static String  email="";
     JButton printButton = new JButton("Print");
     printButton.addActionListener(e -> {
         try {
-            receiptArea.print(); // Print functionality
+            receiptArea.print(); 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(receiptFrame, "Error printing receipt: " + ex.getMessage());
         }

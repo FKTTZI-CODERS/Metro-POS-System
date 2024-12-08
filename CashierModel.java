@@ -28,7 +28,29 @@ AuthenticateController a;
         }
         return products;
     }
-
+public int checkQuantity(String product) throws SQLException
+{
+    String q1="select Product_id from product where Product_Name=?";
+    int product_id=0;
+     PreparedStatement stmt = conn.prepareStatement(q1);
+     stmt.setString(1,product);
+        ResultSet rs = stmt.executeQuery();
+        if(rs.next())
+        {
+            product_id=rs.getInt("Product_id");
+        }
+        String q2="select Quantity_Remaining from stock where Product_id=?";
+        int quantity=0;
+         PreparedStatement ps = conn.prepareStatement(q2);
+     ps.setInt(1,product_id);
+        ResultSet res = ps.executeQuery();
+        if(res.next())
+        {
+            quantity=res.getInt("Quantity_Remaining");
+        }
+        return quantity;
+    
+}
    public double getProductPrice(String productName) throws SQLException {
     String query = "SELECT Original_Price FROM Product WHERE product_name = ?";
     try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -102,12 +124,11 @@ String bcode=a.getCode();
 }
 
     public DefaultTableModel getBillTableModel() {
-        // Placeholder for DefaultTableModel implementation
         return new DefaultTableModel();
     }
 
     public DefaultTableModel getSalesTableModel() throws SQLException {
-        String query = "SELECT * FROM sales";
+        String query = "SELECT p.Product_Name,s.Quantity_Sold,s.Total_Price FROM sales s JOIN product p on s.Product_id=p.Product_id where DATE(Sale_date)=CURDATE()";
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(query);
 
@@ -160,9 +181,7 @@ public ArrayList<Object[]> getBillDetails(String customerName) throws SQLExcepti
 }
 
 
-    public void generateReceipt() throws SQLException {
-        // Placeholder for receipt generation logic
-    }
+   
     public String getBranchCodeByEmail(String email) throws SQLException {
     String query = "SELECT Branch_Code FROM Cashier WHERE email = ?";
     try (PreparedStatement stmt = conn.prepareStatement(query)) {
