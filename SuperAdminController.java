@@ -81,17 +81,17 @@ public SuperAdminController()
  }
      return false;
  }
- public Object[][]getProfit(String code,String duration) throws SQLException
+ public Object[][]getProfit(String code,String duration,String start,String end) throws SQLException
  {if (!duration.equalsIgnoreCase("Today") 
         && !duration.equalsIgnoreCase("Weekly") 
         && !duration.equalsIgnoreCase("Monthly") 
-        && !duration.equalsIgnoreCase("Yearly")) {
+        && !duration.equalsIgnoreCase("Yearly")&& !duration.equalsIgnoreCase("Specific Range")) {
         JOptionPane.showMessageDialog(null, "Invalid duration type!");
         return new Object[0][0];
     }
      
  
-        return s.getProfit(code, duration);
+        return s.getProfit(code, duration,start,end);
     
     
      

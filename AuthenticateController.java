@@ -12,9 +12,9 @@ import metropos.view.SuperAdminDashboardView;
 import metropos.view.CashierDashboardView;
 
 public class AuthenticateController {
-    String email;
+    private static String email;
 private static String code="";
-    public String getEmail() {System.out.println(email);
+    public static synchronized String getEmail() {System.out.println("In get Email function "+email);
         return email;
     }
 
@@ -29,7 +29,7 @@ private static String code="";
     User u;
     SuperAdminDashboardView sa;
     CashierDashboardView c;
-    CashierController cc;
+  
     BranchManagerDashboardView bm;
     DEODashboardView deo; 
 
@@ -38,7 +38,7 @@ private static String code="";
 
       
         u = new User();
-        cc= new CashierController();
+        
     }
 
     public void login(String e, String pass, String t) throws SQLException {
@@ -63,7 +63,7 @@ private static String code="";
                     return;
                 }
             } else if (t.equals("Data Entry Operator")) {
-                if (u.login(e, pass, t)) {
+                if (u.login(e, pass, t)) {setDEOEmail(e);
                     JOptionPane.showMessageDialog(null, "Login successful");
                     isFirstLogin(e, "Data Entry Operator"); 
                 } else {
@@ -71,7 +71,7 @@ private static String code="";
                     return;
                 }
             } else { // Cashier role
-                if (u.login(e, pass, t)) {cc.setEmail(e);
+                if (u.login(e, pass, t)) { setCashierEmail(e);
                     JOptionPane.showMessageDialog(null, "Login successful");
                     isFirstLogin(e, "Cashier");
                 } else {
@@ -84,6 +84,18 @@ private static String code="";
 public void setBranchEmail(String email) throws SQLException
 {
    this.code=(u.getBmBranchCode(email));
+    System.out.println("Set:"+code);
+    
+}
+public void setDEOEmail(String email) throws SQLException
+{
+   this.code=(u.getDEOBranchCode(email));
+    System.out.println("Set:"+code);
+    
+}
+public synchronized void setCashierEmail(String email) throws SQLException
+{
+   this.code=(u.getBranchCodeOfCashier(email));
     System.out.println("Set:"+code);
     
 }

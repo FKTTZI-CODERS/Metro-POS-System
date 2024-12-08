@@ -45,19 +45,19 @@ static String  email="";
     double discountedprice = model.getDiscountedPrice(productName);
     double discountedPrice = price - discountedprice;
     totalPrice = totalPrice-(discountedPrice * quantity);
-        model.addBillEntry(customerName, productName, quantity, price,discountedPrice , totalPrice);
+        model.addBillEntry(customerName,productName, quantity, price,discountedPrice , totalPrice);
     }
-    public Object[] addProductToBill(String customerName, String productName, int quantity,String email) throws SQLException {
+    public Object[] addProductToBill(String customerName, String productName, int quantity) throws SQLException {
     double price = model.getProductPrice(productName);
-    double discountedprice = model.getDiscountedPrice(productName);
-    double discountedPrice = price - discountedprice;
+    double discountedPrice = model.getDiscountedPrice(productName);
     double totalPrice = discountedPrice * quantity;
 
     // Update Bill Table
     model.addBillEntry(customerName, productName, quantity, price,discountedPrice, totalPrice);
 
     // Update Sales Table
-    model.addSalesEntry(customerName, productName, quantity, totalPrice,getEmail());
+    
+    model.addSalesEntry(customerName, productName, quantity, totalPrice);
 
     // Update Stock Table
     model.updateStock(productName, quantity);
@@ -77,7 +77,7 @@ static String  email="";
         double tax = price * quantity * taxRate;
         double totalPrice = (price * quantity) + tax;
 
-        model.addProductToSalesTable( productName, quantity, price, discount, totalPrice,getEmail());
+        model.addProductToSalesTable( productName, quantity, price, discount, totalPrice);
     }
 
     public DefaultTableModel getSalesTableModel() throws SQLException {
