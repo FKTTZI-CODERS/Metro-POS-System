@@ -212,7 +212,18 @@ else
     }
     
 }
-
+public String getBmBranchCode(String email) throws SQLException
+{
+    String query="SELECT Branch_Code from BranchManager where email=?";
+    PreparedStatement ps=conn.prepareStatement(query);
+    ps.setString(1,email);
+    ResultSet rs=ps.executeQuery();
+    if(rs.next())
+    {
+        return rs.getString("Branch_Code");
+    }
+    return null;
+}
     public String getCmail() {
         return cmail;
     }

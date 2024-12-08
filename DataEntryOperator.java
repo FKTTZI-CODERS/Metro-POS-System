@@ -1,9 +1,10 @@
 package metropos.model;
 
 import java.sql.*;
+import metropos.controller.AuthenticateController;
 
 public class DataEntryOperator extends User {
-
+AuthenticateController a;
     public ResultSet getVendors() throws SQLException {
         String query = "SELECT * FROM Vendor";
         Statement stmt = conn.createStatement();
@@ -52,10 +53,12 @@ public class DataEntryOperator extends User {
 
     public boolean addProduct(int vendorId, String productName, String category, int quantity,
                                double originalPrice, double salePrice, double pricePerUnit, 
-                               double pricePerCarton) throws SQLException {
+                               double pricePerCarton) throws SQLException {a= new AuthenticateController();
         String query = "INSERT INTO Product (Product_Name, Category, Original_Price,Stock_Quantity, Sale_Price, " +
                        "Price_per_Unit, Price_per_Carton, Vendor_id) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
+        String q2="INSERT INTO stock (Branch_Code,Product_id, Category,Quantity_Remaining) VALUES (?, (SELECT Product_id FROM Product WHERE Product_Name = ?), ?, ?)";
         PreparedStatement ps = conn.prepareStatement(query);
+        PreparedStatement ps2 = conn.prepareStatement(q2);
         ps.setString(1, productName);
         ps.setString(2, category);
         ps.setDouble(3, originalPrice);
@@ -64,9 +67,23 @@ public class DataEntryOperator extends User {
         ps.setDouble(6, pricePerUnit);
         ps.setDouble(7, pricePerCarton);
         ps.setInt(8, vendorId);  // Use Vendor_id as foreign key
+        ps2.setString(1,a.getCode());
+        ps2.setString(2, productName);
+        ps2.setString(3,category);
+        ps2.setInt(4,quantity);
+        ps2.executeUpdate();
         return ps.executeUpdate() > 0;
     }
-
+public void stockupdate(String product,String category,int quantity) throws SQLException
+{
+      String q2="INSERT INTO stock (Branch_Code,Product_id, Category,Quantity_Remaining) VALUES (?, (SELECT Product_id FROM Product WHERE Product_Name = ?), ?, ?)";
+       PreparedStatement ps2 = conn.prepareStatement(q2);
+       ps2.setString(1,a.getCode());
+        ps2.setString(2, product);
+        ps2.setString(3,category);
+        ps2.setInt(4,quantity);
+        ps2.executeUpdate();
+}
    
     public boolean updateProduct(int productId, String productName, String category, 
                                   double originalPrice, double salePrice, double pricePerUnit, 
