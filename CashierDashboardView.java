@@ -54,13 +54,11 @@ public class CashierDashboardView extends JFrame {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         centerPanel.add(btnPanel);
-
+        centerPanel.setBackground(Color.white);
         add(centerPanel, BorderLayout.CENTER);
 
-        JLabel display = new JLabel("Cashier Dashboard", JLabel.CENTER);
-        display.setFont(new Font("Mulish", Font.BOLD, 20));
-        display.setForeground(Color.gray);
-        add(display, BorderLayout.SOUTH);
+       
+        
     }
 
     private JButton createStyledButton(String text) {
