@@ -11,7 +11,15 @@ import java.sql.Statement;
 {protected String userID;
 Connection conn;
     protected String name;
-    protected String email;
+    protected static String email;
+
+    public synchronized  String getEmail() {
+        return email;
+    }
+
+    public static void setEmail(String email) {
+        User.email = email;
+    }
     protected String password;
     protected String type;
     private String cbcode;
@@ -179,6 +187,7 @@ public boolean login(String email , String pass, String type) throws SQLExceptio
          PreparedStatement ps= conn.prepareStatement(query);
         ps.setString(1, email);
         ps.setString(2, pass);
+        setEmail(email);
         ResultSet res = ps.executeQuery();
         return res.next();  
     }

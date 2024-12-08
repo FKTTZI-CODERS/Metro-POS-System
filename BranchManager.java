@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class BranchManager extends User {
-    
+    User u;
     public boolean addCashier( String name, String email, String salary, String branchCode) throws SQLException {
         String query = "INSERT INTO Cashier (name, email, salary, Branch_Code) VALUES (?, ?, ?, ?)";
         PreparedStatement ps = conn.prepareStatement(query);
@@ -111,7 +111,19 @@ public class BranchManager extends User {
         }
         return sale;
     }
-    
+    public synchronized String getbranchcode() throws SQLException
+    {u= new User();
+    String bmail=u.getEmail();
+    String query="select Branch_Code from BranchManager where email=?";
+     PreparedStatement ps = conn.prepareStatement(query);
+        ps.setString(1,bmail);
+        ResultSet rs = ps.executeQuery();
+        if(rs.next())
+        {
+            return rs.getString("Branch_Code");
+        }
+        return null;
+    }
     public Object[][] getRemainingStockData(String code, String duration) throws SQLException
     {
          ArrayList<Object[]> getremainingstock= new ArrayList<>();
