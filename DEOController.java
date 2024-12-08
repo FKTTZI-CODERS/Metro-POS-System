@@ -41,7 +41,7 @@ public class DEOController {
                                double salePrice, double pricePerUnit, double pricePerCarton) throws SQLException {
         return model.addProduct(vendorId, productName, category,quantity, originalPrice, salePrice, pricePerUnit, pricePerCarton);
     }
-    public void stockupdate(String product, String category,int quantity)
+    public void stockupdate(String product, String category,int quantity) throws SQLException
     {
          model.stockupdate(product,category,quantity);
     }

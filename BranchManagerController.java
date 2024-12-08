@@ -63,6 +63,10 @@ public class BranchManagerController {
     
      
  }
+ public synchronized String getbranchcode() throws SQLException
+ {
+     return branchManager.getbranchcode();
+ }
  public Object[][]getRemainingStockData(String code,String duration)
  {
      if (!duration.equalsIgnoreCase("Today") 
