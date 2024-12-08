@@ -255,9 +255,10 @@ public class DEODashboardView extends JFrame {
                             Double.parseDouble(pricePerUnitField.getText()), Double.parseDouble(pricePerCartonField.getText()));
 
                     if (success) {
+                            
                         JOptionPane.showMessageDialog(null, "Product added successfully!");
                         addProductFrame.dispose();
-                        populateProductTable(); 
+                        populateProductTable();//controller.stockupdate(productNameField.getText(), categoryField.getText(),Integer.parseInt(quantityField.getText()));
                     } else {
                         JOptionPane.showMessageDialog(null, "Error adding product!");
                     }
