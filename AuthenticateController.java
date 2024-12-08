@@ -13,7 +13,7 @@ import metropos.view.CashierDashboardView;
 
 public class AuthenticateController {
     String email;
-
+private static String code="";
     public String getEmail() {System.out.println(email);
         return email;
     }
@@ -55,7 +55,7 @@ public class AuthenticateController {
                     return;
                 }
             } else if (t.equals("Branch Manager")) {
-                if (u.login(e, pass, t)) {
+                if (u.login(e, pass, t)) {setBranchEmail(e);
                     JOptionPane.showMessageDialog(null, "Login successful");
                     isFirstLogin(e, "Branch Manager");
                 } else {
@@ -81,7 +81,18 @@ public class AuthenticateController {
             }
         }
     }
+public void setBranchEmail(String email) throws SQLException
+{
+   this.code=(u.getBmBranchCode(email));
+    System.out.println("Set:"+code);
+    
+}
 
+    public synchronized String getCode() {System.out.println("Getter: "+code);
+        return this.code;
+    }
+
+    
     private void isFirstLogin(String email, String type) throws SQLException {
         if (email.isEmpty() || type.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No field can be empty");

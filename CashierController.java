@@ -12,7 +12,7 @@ public class CashierController {
     private CashierModel model;
     private User u;
   
-String email="";
+static String  email="";
     public CashierController() {
         model = new CashierModel();
         u = new User();
@@ -24,7 +24,7 @@ String email="";
     }
 
 
-    public String getEmail() {
+    public synchronized String getEmail() {
         return email;
     }
 

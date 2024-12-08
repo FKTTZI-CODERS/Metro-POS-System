@@ -40,4 +40,61 @@ public class BranchManagerController {
             JOptionPane.showMessageDialog(null, "Failed to add Data Entry Operator!");
         }
     }
+     public boolean viewReports(String code) throws SQLException
+ {if(code== null || code.trim().isEmpty())
+ {
+     JOptionPane.showMessageDialog(null, "Branch code cannot be empty!");
+     return false;
+ }
+ return true;
+ }
+ public Object[][]getProfit(String code,String duration) throws SQLException
+ {if (!duration.equalsIgnoreCase("Today") 
+        && !duration.equalsIgnoreCase("Weekly") 
+        && !duration.equalsIgnoreCase("Monthly") 
+        && !duration.equalsIgnoreCase("Yearly")) {
+        JOptionPane.showMessageDialog(null, "Invalid duration type!");
+        return new Object[0][0];
+    }
+     
+ 
+        return branchManager.getProfit(code, duration);
+    
+    
+     
+ }
+ public Object[][]getRemainingStockData(String code,String duration)
+ {
+     if (!duration.equalsIgnoreCase("Today") 
+        && !duration.equalsIgnoreCase("Weekly") 
+        && !duration.equalsIgnoreCase("Monthly") 
+        && !duration.equalsIgnoreCase("Yearly")) {
+        JOptionPane.showMessageDialog(null, "Invalid duration type!");
+        return new Object[0][0];
+    }
+     
+ try {
+        return branchManager.getRemainingStockData(code, duration);
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error fetching Stock data: " + e.getMessage());
+        return new Object[0][0];
+    }
+ }
+ public Object[][] getSalesData(String code,String duration)
+ { if (!duration.equalsIgnoreCase("Today") 
+        && !duration.equalsIgnoreCase("Weekly") 
+        && !duration.equalsIgnoreCase("Monthly") 
+        && !duration.equalsIgnoreCase("Yearly")) {
+        JOptionPane.showMessageDialog(null, "Invalid duration type!");
+        return new Object[0][0];
+    }
+     
+ try {
+        return branchManager.getSalesData(code, duration);
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error fetching sales data: " + e.getMessage());
+        return new Object[0][0];
+    }
+         
+}
 }
