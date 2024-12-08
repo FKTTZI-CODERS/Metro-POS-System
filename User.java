@@ -197,6 +197,7 @@ public boolean login(String email , String pass, String type) throws SQLExceptio
          PreparedStatement ps= conn.prepareStatement(query);
         ps.setString(1, email);
         ps.setString(2, pass);
+         setEmail(email);
         ResultSet res = ps.executeQuery();
         return res.next();  
     }
@@ -209,8 +210,7 @@ else
         ps.setString(2, pass); 
         ResultSet res = ps.executeQuery();
        
-       if (res.next()) {setCmail(email);
-    getBranchCodeOfCashier(email);
+       if (res.next()) {
     return true;
 } else {
     System.out.println("In login method: cbcode not set");
@@ -220,6 +220,18 @@ else
        
     }
     
+}
+public String getDEOBranchCode(String email) throws SQLException
+{
+      String query = "SELECT Branch_Code FROM dataentryoperator WHERE email = ?";
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setString(1, email);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            this.cbcode = rs.getString("Branch_Code");
+            return this.cbcode;
+        }
+        return cbcode;
 }
 public String getBmBranchCode(String email) throws SQLException
 {

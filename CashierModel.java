@@ -3,16 +3,17 @@ package metropos.model;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 import java.util.ArrayList;
+import metropos.controller.AuthenticateController;
 
 
 public class CashierModel {
     private Connection conn;
     private User u;
-
+AuthenticateController a;
     public CashierModel() {
        this.conn = DBConnection.getInstance().getConnection();
         u = new User();
-      
+      a= new AuthenticateController();
     }
  
 
@@ -58,12 +59,11 @@ public class CashierModel {
 }
 
 
- public void addProductToSalesTable(String productName, int quantity, double price, double discount, double totalPrice,String email) throws SQLException {
-    String mail = email;
-    String branchCode = getBranchCodeByEmail(mail);
-     System.out.println(branchCode);
+ public void addProductToSalesTable(String productName, int quantity, double price, double discount, double totalPrice) throws SQLException {
+    String branchCode =a.getCode() ;
+     System.out.println("in add product to sales table "+branchCode);
 
-    String query = "INSERT INTO sales (product_id, Quantity_Sold, price_per_unit, Sale_Price, total_price, Branch_Code) " +
+    String query = "INSERT INTO sales (product_id, Quantity_Sold, price_per_unit, Sale_Price, Total_Price, Branch_Code) " +
                    "VALUES ((SELECT Product_id FROM Product WHERE Product_Name = ?), ?, ?, ?, ?, ?)";
     try (PreparedStatement ps = conn.prepareStatement(query)) {
         ps.setString(1, productName);
@@ -88,9 +88,10 @@ public double getDiscountedPrice(String productName) throws SQLException {
         }
     }
 }
-public void addSalesEntry(String customerName, String productName, int quantity, double totalPrice,String email) throws SQLException {String mail=email;
-String bcode=getBranchCodeByEmail(email);
-    String query = "INSERT INTO sales (product_id, Quantity_Sold, total_price,Branch_Code) VALUES ((SELECT Product_id FROM Product WHERE Product_Name = ?), ?, ?,?)";
+public void addSalesEntry(String customerName, String productName, int quantity, double totalPrice) throws SQLException {
+String bcode=a.getCode();
+    System.out.println("in add sales entry of model: "+bcode);
+    String query = "INSERT INTO sales (product_id, Quantity_Sold, Total_Price,Branch_Code) VALUES ((SELECT Product_id FROM Product WHERE Product_Name = ?), ?, ?,?)";
     try (PreparedStatement stmt = conn.prepareStatement(query)) {
         stmt.setString(1,productName);
         stmt.setInt(2, quantity);
@@ -167,7 +168,7 @@ public ArrayList<Object[]> getBillDetails(String customerName) throws SQLExcepti
     try (PreparedStatement stmt = conn.prepareStatement(query)) {
         stmt.setString(1, email);
         ResultSet rs = stmt.executeQuery();
-        if (rs.next()) {
+        if (rs.next()) {System.out.println("Branch code in getBranchCode function: "+rs.getString("Branch_Code"));
             return rs.getString("Branch_Code");
         } else {
             throw new SQLException("Branch_Code not found for the given email.");

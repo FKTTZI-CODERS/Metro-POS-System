@@ -57,7 +57,7 @@ public boolean createBranch(String code, String name, String city, String phone 
         
 
     }
-    public Object[][]getProfit(String code,String duration) throws SQLException
+    public Object[][]getProfit(String code,String duration,String start , String end) throws SQLException
     {
         ArrayList<Object[]> getProfit= new ArrayList<>();
         String query="";
@@ -78,12 +78,19 @@ public boolean createBranch(String code, String name, String city, String phone 
                  case "Yearly":
                 query="SELECT p.Product_Name , SUM(s.Quantity_Sold * s.Total_Price) FROM Sales s JOIN Product p on s.Product_id=p.Product_id WHERE s.Branch_Code=? AND YEAR(s.Sale_Date)=YEAR(CURDATE()) GROUP BY p.Product_Name";
                 break;
-                
+                 case "Specific Range":{
+                query="SELECT p.Product_Name, SUM(s.Quantity_Sold * s.Total_Price) FROM Sales s JOIN Product p ON s.Product_id = p.Product_id WHERE s.Branch_Code = ? AND s.Sale_Date BETWEEN ? AND ? GROUP BY p.Product_Name";
+                break;
+                 }
                  default:
                      throw new IllegalArgumentException("Invalid duration type: "+duration);
         }
         PreparedStatement ps = conn.prepareStatement(query);
         ps.setString(1,code);
+          if ("Specific Range".equalsIgnoreCase(duration)) {
+        ps.setString(2, start);
+        ps.setString(3, end);
+    }
         ResultSet rs = ps.executeQuery();
         while(rs.next())
         {
