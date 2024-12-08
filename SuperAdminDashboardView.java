@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
@@ -112,15 +113,17 @@ SuperAdminController s;
         f.setBounds(0,0,500,600);
         f.setLayout(new BorderLayout());
         JPanel p1= new JPanel(new GridLayout(4,1));
-        JButton today ,weekly, monthly, yearly;
+        JButton today ,weekly, monthly, yearly,specific;
         today= new JButton("Today");
         weekly= new JButton("Weekly");
         monthly=new JButton("Monthly");
         yearly=new JButton("Yearly");
+        specific= new JButton("Specific Range");
         p1.add(today);
         p1.add(weekly);
         p1.add(monthly);
         p1.add(yearly);
+        p1.add(specific);
         JLabel displaytxt=new JLabel("Report Time Menu");
         f.add(displaytxt,BorderLayout.NORTH);
         f.add(p1,BorderLayout.CENTER);
@@ -150,6 +153,12 @@ SuperAdminController s;
            public void actionPerformed(ActionEvent ae)
            {reportType(code, "Yearly");}
        });
+          specific.addActionListener(new ActionListener()
+       {
+           @Override
+           public void actionPerformed(ActionEvent ae)
+           {reportType(code, "Specific Range");}
+       });
          f.setDefaultCloseOperation(EXIT_ON_CLOSE);
         f.setVisible(true);
     }
@@ -176,8 +185,35 @@ SuperAdminController s;
        {
            @Override
            public void actionPerformed(ActionEvent ae)
-           {   try {
-               profitReport(code, "Today");
+           {   try {if(duration.equalsIgnoreCase("Today")){
+               profitReport(code, "Today",null,null);
+           }
+           else if(duration.equalsIgnoreCase("Weekly"))
+           {
+               profitReport(code, "Weekly",null,null);
+           }
+           else if(duration.equalsIgnoreCase("Monthly"))
+           {
+                profitReport(code, "Monthly",null,null);
+           }
+           else if(duration.equalsIgnoreCase("Yearly"))
+           {profitReport(code, "Yearly",null,null);
+               
+           }
+           else 
+           { String startDate = JOptionPane.showInputDialog(null, "Enter the start date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
+                String endDate = JOptionPane.showInputDialog(null, "Enter the end date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
+
+                // Validate that the user provided both dates
+                if (startDate != null && !startDate.trim().isEmpty() &&
+                    endDate != null && !endDate.trim().isEmpty()) {
+                    profitReport(code, "Specific Range", startDate, endDate);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Both start and end dates are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                }
+               
+              
+           }
                } catch (SQLException ex) {
                    Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
                }
@@ -199,7 +235,7 @@ SuperAdminController s;
         f.setVisible(true);
         
     }
-    private void profitReport(String code, String duration) throws SQLException
+    private void profitReport(String code, String duration,String start,String end) throws SQLException
     {dispose();
     JFrame f= new JFrame(duration+" Profit Report");
     f.setBounds(0,0,500,600);
@@ -207,7 +243,7 @@ SuperAdminController s;
    JLabel displayMsg= new JLabel("Profit Report for Branch: "+ code + " ( "+duration+" ) ",JLabel.CENTER);
     f.add(displayMsg,BorderLayout.NORTH);
 String[] profitreport={"Product Name", "Profit"};
-Object[][] profit= s.getProfit(code,duration);
+Object[][] profit= s.getProfit(code,duration,start,end);
 JTable t= new JTable(profit,profitreport);
 JScrollPane scrollpane= new JScrollPane(t);
 f.add(scrollpane,BorderLayout.CENTER);

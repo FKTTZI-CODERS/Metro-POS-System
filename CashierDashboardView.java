@@ -105,8 +105,9 @@ public class CashierDashboardView extends JFrame {
             String productName = (String) prodNameCombo.getSelectedItem();
             int quantity = Integer.parseInt(quantityField.getText());
 AuthenticateController a= new AuthenticateController();
-String mail=a.getEmail();
-            Object[] productDetails = controller.addProductToBill(customerName, productName, quantity,mail);
+String code=a.getCode();
+            System.out.println("In Cashier Dashboard: "+code);
+            Object[] productDetails = controller.addProductToBill(customerName, productName, quantity);
             tableModel.addRow(productDetails);
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(billFrame, "Quantity must be a valid number.");
