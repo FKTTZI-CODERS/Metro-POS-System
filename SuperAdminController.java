@@ -96,34 +96,34 @@ public SuperAdminController()
     
      
  }
- public Object[][]getRemainingStockData(String code,String duration)
+ public Object[][]getRemainingStockData(String code,String duration,String start,String end)
  {
      if (!duration.equalsIgnoreCase("Today") 
         && !duration.equalsIgnoreCase("Weekly") 
         && !duration.equalsIgnoreCase("Monthly") 
-        && !duration.equalsIgnoreCase("Yearly")) {
+        && !duration.equalsIgnoreCase("Yearly")&&!duration.equalsIgnoreCase("Specific Range")) {
         JOptionPane.showMessageDialog(null, "Invalid duration type!");
         return new Object[0][0];
     }
      
  try {
-        return s.getRemainingStockData(code, duration);
+        return s.getRemainingStockData(code, duration,start,end);
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(null, "Error fetching Stock data: " + e.getMessage());
         return new Object[0][0];
     }
  }
- public Object[][] getSalesData(String code,String duration)
+ public Object[][] getSalesData(String code,String duration,String start,String end)
  { if (!duration.equalsIgnoreCase("Today") 
         && !duration.equalsIgnoreCase("Weekly") 
         && !duration.equalsIgnoreCase("Monthly") 
-        && !duration.equalsIgnoreCase("Yearly")) {
+        && !duration.equalsIgnoreCase("Yearly")&&!duration.equalsIgnoreCase("Specific Range")) {
         JOptionPane.showMessageDialog(null, "Invalid duration type!");
         return new Object[0][0];
     }
      
  try {
-        return s.getSalesData(code, duration);
+        return s.getSalesData(code, duration,start,end);
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(null, "Error fetching sales data: " + e.getMessage());
         return new Object[0][0];
