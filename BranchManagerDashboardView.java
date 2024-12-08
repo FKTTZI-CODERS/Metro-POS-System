@@ -280,186 +280,206 @@ private void addCashier() throws SQLException {
         }
     }
 
-    private void reportDuration(String code) {
-        dispose();
-        JFrame f = new JFrame("Reports Dashboard");
-        f.setBounds(0, 0, 500, 600);
-        f.setLayout(new BorderLayout());
-        JPanel p1 = new JPanel(new GridLayout(5, 1));
-        JButton today, weekly, monthly, yearly, specific;
-        today = new JButton("Today");
-        weekly = new JButton("Weekly");
-        monthly = new JButton("Monthly");
-        yearly = new JButton("Yearly");
-        specific = new JButton("Specific Range");
-        p1.add(today);
-        p1.add(weekly);
-        p1.add(monthly);
-        p1.add(yearly);
-        p1.add(specific);
-        JLabel displaytxt = new JLabel("Report Time Menu");
-        f.add(displaytxt, BorderLayout.NORTH);
-        f.add(p1, BorderLayout.CENTER);
+   private void reportDuration(String code) {
+    dispose();
 
-        today.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                reportType(code, "Today");
-            }
-        });
-        weekly.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                reportType(code, "Weekly");
-            }
-        });
-        monthly.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                reportType(code, "Monthly");
-            }
-        });
-        yearly.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                reportType(code, "Yearly");
-            }
-        });
-        specific.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                reportType(code, "Specific Range");
-            }
-        });
+    JFrame f = new JFrame("Reports Dashboard");
+    f.setSize(500, 600);
+    f.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    f.setLayout(new BorderLayout());
 
-        f.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        f.setVisible(true);
-    }
-    public void reportType(String code, String duration)
-    {dispose();
-        JFrame f= new JFrame("Reports Type");
-        f.setBounds(0,0,500,600);
-        f.setLayout(new BorderLayout());
-        JPanel p1= new JPanel(new GridLayout(3,1));
-        JButton Sales, RemainingStock, Profit;
-        
-       Sales= new JButton("Sales");
-        RemainingStock= new JButton("Remaining Stock");
-        Profit=new JButton("Profit");
-        p1.add(Sales);
-        p1.add(RemainingStock);
-        p1.add(Profit);
-        JLabel displaytxt=new JLabel("Report Type Menu");
-        f.add(displaytxt,BorderLayout.NORTH);
-        f.add(p1,BorderLayout.CENTER);
-        
-        
-        Profit.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {   try {if(duration.equalsIgnoreCase("Today")){
-               profitReport(code, "Today",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Weekly"))
-           {
-               profitReport(code, "Weekly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Monthly"))
-           {
-                profitReport(code, "Monthly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Yearly"))
-           {profitReport(code, "Yearly",null,null);
-               
-           }
-           else 
-           { String startDate = JOptionPane.showInputDialog(null, "Enter the start date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
-                String endDate = JOptionPane.showInputDialog(null, "Enter the end date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
+    
+    JPanel mainPanel = new JPanel(new GridBagLayout());
+    mainPanel.setBackground(new Color(227, 238, 254));
 
-               
-                if (startDate != null && !startDate.trim().isEmpty() &&
-                    endDate != null && !endDate.trim().isEmpty()) {
-                    profitReport(code, "Specific Range", startDate, endDate);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Both start and end dates are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                }
-               
-              
-           }
-               } catch (SQLException ex) {
-                   Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
-               }
+    
+    JPanel p1 = new JPanel(new GridBagLayout());
+    p1.setBackground(Color.WHITE);
+    p1.setBorder(BorderFactory.createLineBorder(Color.GRAY, 3));
+
+    
+    JLabel displaytxt = new JLabel("Report Time Menu");
+    displaytxt.setFont(new Font("Arial", Font.BOLD, 22));
+    displaytxt.setHorizontalAlignment(SwingConstants.CENTER);
+    displaytxt.setForeground(Color.DARK_GRAY);
+
+    
+    JButton today = new JButton("Today");
+    JButton weekly = new JButton("Weekly");
+    JButton monthly = new JButton("Monthly");
+    JButton yearly = new JButton("Yearly");
+    JButton specific = new JButton("Specific Range");
+
+    styleButton(today);
+    styleButton(weekly);
+    styleButton(monthly);
+    styleButton(yearly);
+    styleButton(specific);
+
+    
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(10, 10, 10, 10);
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.gridwidth = 1;
+    p1.add(today, gbc);
+
+    gbc.gridy++;
+    p1.add(weekly, gbc);
+
+    gbc.gridy++;
+    p1.add(monthly, gbc);
+
+    gbc.gridy++;
+    p1.add(yearly, gbc);
+
+    gbc.gridy++;
+    p1.add(specific, gbc);
+
+    
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.gridwidth = 1;
+    mainPanel.add(displaytxt, gbc);
+
+    gbc.gridy++;
+    mainPanel.add(p1, gbc);
+
+   
+    f.add(mainPanel, BorderLayout.CENTER);
+
+    
+    today.addActionListener(e -> reportType(code, "Today"));
+    weekly.addActionListener(e -> reportType(code, "Weekly"));
+    monthly.addActionListener(e -> reportType(code, "Monthly"));
+    yearly.addActionListener(e -> reportType(code, "Yearly"));
+    specific.addActionListener(e -> reportType(code, "Specific Range"));
+
+    f.setVisible(true);
 }
-       });
-        RemainingStock.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {if(duration.equalsIgnoreCase("Today")){
-               remainingstockReport(code, "Today",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Weekly"))
-           {
-               remainingstockReport(code, "Weekly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Monthly"))
-           {
-                remainingstockReport(code, "Monthly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Yearly"))
-           {remainingstockReport(code, "Yearly",null,null);
-               
-           }
-           else 
-           { String startDate = JOptionPane.showInputDialog(null, "Enter the start date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
-                String endDate = JOptionPane.showInputDialog(null, "Enter the end date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
+public void reportType(String code, String duration) {
+    dispose();
 
-                if (startDate != null && !startDate.trim().isEmpty() &&
-                    endDate != null && !endDate.trim().isEmpty()) {
-                    remainingstockReport(code, "Specific Range", startDate, endDate);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Both start and end dates are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                }}
-       }
-});
-               
-        Sales.addActionListener(new ActionListener()
-       {
-           @Override
-           public void actionPerformed(ActionEvent ae)
-           {if(duration.equalsIgnoreCase("Today")){
-               salesReport(code, "Today",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Weekly"))
-           {
-              salesReport(code, "Weekly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Monthly"))
-           {
-                salesReport(code, "Monthly",null,null);
-           }
-           else if(duration.equalsIgnoreCase("Yearly"))
-           {salesReport(code, "Yearly",null,null);
-               
-           }
-           else 
-           { String startDate = JOptionPane.showInputDialog(null, "Enter the start date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
-                String endDate = JOptionPane.showInputDialog(null, "Enter the end date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
+    JFrame f = new JFrame("Reports Type");
+    f.setSize(500, 600);
+    f.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    f.setLayout(new BorderLayout());
 
-               
-                if (startDate != null && !startDate.trim().isEmpty() &&
-                    endDate != null && !endDate.trim().isEmpty()) {
-                    salesReport(code, "Specific Range", startDate, endDate);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Both start and end dates are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                }}
-       }
-       });
-         f.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        f.setVisible(true);
-        
+    
+    JPanel mainPanel = new JPanel(new GridBagLayout());
+    mainPanel.setBackground(new Color(227, 238, 254));
+
+   
+    JPanel p1 = new JPanel(new GridBagLayout());
+    p1.setBackground(Color.WHITE);
+    p1.setBorder(BorderFactory.createLineBorder(Color.GRAY, 3));
+
+    
+    JLabel displaytxt = new JLabel("Report Type Menu");
+    displaytxt.setFont(new Font("Arial", Font.BOLD, 22));
+    displaytxt.setHorizontalAlignment(SwingConstants.CENTER);
+    displaytxt.setForeground(Color.DARK_GRAY);
+
+    
+    JButton sales = new JButton("Sales");
+    JButton remainingStock = new JButton("Remaining Stock");
+    JButton profit = new JButton("Profit");
+
+    styleButton(sales);
+    styleButton(remainingStock);
+    styleButton(profit);
+
+    
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(10, 10, 10, 10);
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+
+    
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    p1.add(sales, gbc);
+
+    gbc.gridy++;
+    p1.add(remainingStock, gbc);
+
+    gbc.gridy++;
+    p1.add(profit, gbc);
+
+    
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.gridwidth = 1;
+    mainPanel.add(displaytxt, gbc);
+
+    gbc.gridy++;
+    mainPanel.add(p1, gbc);
+
+    
+    f.add(mainPanel, BorderLayout.CENTER);
+
+    
+    sales.addActionListener(e -> handleReportAction(code, duration, "Sales"));
+    remainingStock.addActionListener(e -> handleReportAction(code, duration, "Remaining Stock"));
+    profit.addActionListener(e -> handleReportAction(code, duration, "Profit"));
+
+    f.setVisible(true);
+}
+
+private void handleReportAction(String code, String duration, String reportType) {
+    try {
+        if (duration.equalsIgnoreCase("Today")) {
+            switch (reportType) {
+                case "Sales" -> salesReport(code, "Today", null, null);
+                case "Remaining Stock" -> remainingstockReport(code, "Today", null, null);
+                case "Profit" -> profitReport(code, "Today", null, null);
+            }
+        } else if (duration.equalsIgnoreCase("Weekly")) {
+            switch (reportType) {
+                case "Sales" -> salesReport(code, "Weekly", null, null);
+                case "Remaining Stock" -> remainingstockReport(code, "Weekly", null, null);
+                case "Profit" -> profitReport(code, "Weekly", null, null);
+            }
+        } else if (duration.equalsIgnoreCase("Monthly")) {
+            switch (reportType) {
+                case "Sales" -> salesReport(code, "Monthly", null, null);
+                case "Remaining Stock" -> remainingstockReport(code, "Monthly", null, null);
+                case "Profit" -> profitReport(code, "Monthly", null, null);
+            }
+        } else if (duration.equalsIgnoreCase("Yearly")) {
+            switch (reportType) {
+                case "Sales" -> salesReport(code, "Yearly", null, null);
+                case "Remaining Stock" -> remainingstockReport(code, "Yearly", null, null);
+                case "Profit" -> profitReport(code, "Yearly", null, null);
+            }
+        } else {
+            String startDate = JOptionPane.showInputDialog(null, "Enter the start date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
+            String endDate = JOptionPane.showInputDialog(null, "Enter the end date (YYYY-MM-DD):", "Specify Range", JOptionPane.PLAIN_MESSAGE);
+
+            if (startDate != null && !startDate.trim().isEmpty() && endDate != null && !endDate.trim().isEmpty()) {
+                switch (reportType) {
+                    case "Sales" -> salesReport(code, "Specific Range", startDate, endDate);
+                    case "Remaining Stock" -> remainingstockReport(code, "Specific Range", startDate, endDate);
+                    case "Profit" -> profitReport(code, "Specific Range", startDate, endDate);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Both start and end dates are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(SuperAdminDashboardView.class.getName()).log(Level.SEVERE, null, ex);
     }
+}
+
+private void styleButton(JButton button) {
+    button.setFocusPainted(false);
+    button.setBackground(new Color(70, 130, 180));
+    button.setForeground(Color.WHITE);
+    button.setFont(new Font("Arial", Font.BOLD, 16));
+    button.setPreferredSize(new Dimension(150, 40));
+}
+
     private void profitReport(String code, String duration,String start,String end) throws SQLException
     {dispose();
     JFrame f= new JFrame(duration+" Profit Report");
