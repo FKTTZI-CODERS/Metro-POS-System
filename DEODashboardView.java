@@ -258,7 +258,8 @@ public class DEODashboardView extends JFrame {
                             
                         JOptionPane.showMessageDialog(null, "Product added successfully!");
                         addProductFrame.dispose();
-                        populateProductTable();//controller.stockupdate(productNameField.getText(), categoryField.getText(),Integer.parseInt(quantityField.getText()));
+                        populateProductTable();
+                        controller.stockupdate(productNameField.getText(), categoryField.getText(),Integer.parseInt(quantityField.getText()));
                     } else {
                         JOptionPane.showMessageDialog(null, "Error adding product!");
                     }

@@ -91,14 +91,15 @@ viewR= new JButton("View Reports");
     private void addCashier() throws SQLException {
         JFrame cashierFrame = new JFrame("Add Cashier");
         cashierFrame.setLayout(new BorderLayout());
+String code=controller.getbranchcode();
 
         JPanel formPanel = new JPanel(new GridLayout(5, 2));
         JTextField cashierCodeField = new JTextField();
         JTextField nameField = new JTextField();
         JTextField emailField = new JTextField();
         JTextField salaryField = new JTextField();
-        JTextField branchCodeField = new JTextField();
-        
+        JTextField branchCodeField = new JTextField(code);
+         branchCodeField.setEditable(false);
         formPanel.add(new JLabel("Name:"));
         formPanel.add(nameField);
         formPanel.add(new JLabel("Email:"));
@@ -338,13 +339,14 @@ f.setVisible(true);
     private void addDataEntryOperator() throws SQLException {
         JFrame deoFrame = new JFrame("Add Data Entry Operator");
         deoFrame.setLayout(new BorderLayout());
-
+String code=controller.getbranchcode();
         JPanel formPanel = new JPanel(new GridLayout(5, 2));
         JTextField deoCodeField = new JTextField();
         JTextField nameField = new JTextField();
         JTextField emailField = new JTextField();
         JTextField salaryField = new JTextField();
-        JTextField branchCodeField = new JTextField();
+        JTextField branchCodeField = new JTextField(code);
+         branchCodeField.setEditable(false);
 
         formPanel.add(new JLabel("DEO Code:"));
         formPanel.add(deoCodeField);
