@@ -45,7 +45,12 @@ private static String code="";
         if (e.isEmpty() || pass.isEmpty() || t.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Please fill in all blank fields");
             return;
-        } else {
+        }
+        if (!e.endsWith("@gmail.com")) {
+        JOptionPane.showMessageDialog(null, "Email must end with @gmail.com");
+        return;
+    }
+        else {
             if (t.equalsIgnoreCase("Super Admin")) {
                 if (u.login(e, pass, t)) {
                     JOptionPane.showMessageDialog(null, "Login successful");
@@ -110,6 +115,10 @@ public synchronized void setCashierEmail(String email) throws SQLException
             JOptionPane.showMessageDialog(null, "No field can be empty");
             return;
         }
+        if (!email.endsWith("@gmail.com")) {
+        JOptionPane.showMessageDialog(null, "Email must end with @gmail.com");
+        return;
+    }
         if (u.isFirstLogin(email, type)) {
             l = new LoginView();
             JOptionPane.showMessageDialog(null, "You must change your password before proceeding.");
