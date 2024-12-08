@@ -29,7 +29,7 @@ public class LoginView extends JFrame {
         leftPanel.setPreferredSize(new Dimension((int) (getWidth() * 0.55), getHeight()));
 
         // Left Logo
-        JLabel logoLeft = new JLabel(new ImageIcon("Metro-POS-System-main\\metropos\\images\\big.png"));
+        JLabel logoLeft = new JLabel(new ImageIcon("src/metropos/image/big.png"));
         logoLeft.setHorizontalAlignment(SwingConstants.CENTER);
         logoLeft.setPreferredSize(new Dimension(318, 233));
         leftPanel.add(logoLeft, BorderLayout.CENTER);
@@ -69,7 +69,7 @@ public class LoginView extends JFrame {
         add(rightPanel, BorderLayout.CENTER);
 
         // Right Logo
-        JLabel logoRight = new JLabel(new ImageIcon("Metro-POS-System-main\\metropos\\images\\small.png"));
+        JLabel logoRight = new JLabel(new ImageIcon("src/metropos/image/small.png"));
         logoRight.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoRight.setPreferredSize(new Dimension(158, 116));
         rightPanel.add(logoRight);
@@ -104,7 +104,7 @@ public class LoginView extends JFrame {
         JPanel rolePanel = new JPanel(new BorderLayout());
         rolePanel.setBackground(Color.WHITE);
 
-        JLabel roleIcon = new JLabel(new ImageIcon("Metro-POS-System-main\\metropos\\images\\LoginViewProfileiccon.png"));
+        JLabel roleIcon = new JLabel(new ImageIcon("src/metropos/image/LoginViewProfileiccon.png"));
         roleIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         rolePanel.add(roleIcon, BorderLayout.WEST);
 
@@ -121,7 +121,7 @@ public class LoginView extends JFrame {
         JPanel emailPanel = new JPanel(new BorderLayout());
         emailPanel.setBackground(Color.WHITE);
 
-        JLabel emailIcon = new JLabel(new ImageIcon("Metro-POS-System-main\\metropos\\images\\Email.png"));
+        JLabel emailIcon = new JLabel(new ImageIcon("src/metropos/image/Email.png"));
         emailIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         emailPanel.add(emailIcon, BorderLayout.WEST);
 
@@ -153,7 +153,7 @@ public class LoginView extends JFrame {
         JPanel passwordPanel = new JPanel(new BorderLayout());
         passwordPanel.setBackground(Color.WHITE);
 
-        JLabel passwordIcon = new JLabel(new ImageIcon("Metro-POS-System-main\\metropos\\images\\LoginPassword.png"));
+        JLabel passwordIcon = new JLabel(new ImageIcon("src/metropos/image/LoginPassword.png"));
         passwordIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
         passwordPanel.add(passwordIcon, BorderLayout.WEST);
 
@@ -182,7 +182,7 @@ public class LoginView extends JFrame {
         });
         passwordPanel.add(passwordField, BorderLayout.CENTER);
 
-        JButton eyeButton = new JButton(new ImageIcon("Metro-POS-System-main\\metropos\\images\\EyeIconOutlined.png"));
+        JButton eyeButton = new JButton(new ImageIcon("src/metropos/image/EyeIconOutlined.png"));
         eyeButton.setBorderPainted(false);
         eyeButton.setContentAreaFilled(false);
         eyeButton.setFocusPainted(false);
@@ -272,38 +272,76 @@ public class LoginView extends JFrame {
     }
 
     // Password change screen
-    public void changePassScreen(String email, String role) {
-        JFrame changeFrame = new JFrame("Change Password");
-        changeFrame.setBounds(0, 0, 400, 300);
-        JLabel display = new JLabel("Change Password");
-        JPanel passPanel = new JPanel(new GridLayout(3, 2));
+   public void changePassScreen(String email, String role) {
+    JFrame changeFrame = new JFrame("Change Password");
+    changeFrame.setBounds(0, 0, 400, 300);
+    JLabel display = new JLabel("Change Password");
+    JPanel passPanel = new JPanel(new GridLayout(3, 2));
 
-        JLabel newpasslb = new JLabel("New Password: ");
-        JLabel confirmpasslb = new JLabel("Confirm Password: ");
-        JPasswordField newpassfield = new JPasswordField();
-        JPasswordField confirmpassfield = new JPasswordField();
-        JButton change = new JButton("Change Password");
-        change.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                String newpass = new String(newpassfield.getPassword());
-                String confirmpass = new String(confirmpassfield.getPassword());
-                try {
-                    authController.changePass(newpass, confirmpass, email, role);
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+    JLabel newpasslb = new JLabel("New Password: ");
+    JLabel confirmpasslb = new JLabel("Confirm Password: ");
+    JPasswordField newpassfield = new JPasswordField();
+    JPasswordField confirmpassfield = new JPasswordField();
+    JButton change = new JButton("Change Password");
+    change.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            String newpass = new String(newpassfield.getPassword());
+            String confirmpass = new String(confirmpassfield.getPassword());
+
+            // Validate the password
+            if (!isValidPassword(newpass)) {
+                JOptionPane.showMessageDialog(null, 
+                    "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one special character.");
+                return;
             }
-        });
 
-        passPanel.add(newpasslb);
-        passPanel.add(newpassfield);
-        passPanel.add(confirmpasslb);
-        passPanel.add(confirmpassfield);
-        changeFrame.add(change, BorderLayout.SOUTH);
-        changeFrame.add(display, BorderLayout.NORTH);
-        changeFrame.add(passPanel, BorderLayout.CENTER);
-        changeFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        changeFrame.setVisible(true);
+            // Check if the passwords match
+            if (!newpass.equals(confirmpass)) {
+                JOptionPane.showMessageDialog(null, "Passwords do not match!");
+                return;
+            }
+
+            try {
+                authController.changePass(newpass, confirmpass, email, role);
+                JOptionPane.showMessageDialog(null, "Password successfully changed!");
+                changeFrame.dispose();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "An error occurred while changing the password.");
+            }
+        }
+    });
+
+         passPanel.add(newpasslb);
+    passPanel.add(newpassfield);
+    passPanel.add(confirmpasslb);
+    passPanel.add(confirmpassfield);
+    passPanel.add(change);
+
+    changeFrame.add(display, BorderLayout.NORTH);
+    changeFrame.add(passPanel, BorderLayout.CENTER);
+    changeFrame.setVisible(true);
+}
+
+// Helper method to validate the password
+private boolean isValidPassword(String password) {
+    if (password.length() < 8) return false;
+
+    boolean hasUppercase = false;
+    boolean hasLowercase = false;
+    boolean hasSpecialChar = false;
+
+    for (char ch : password.toCharArray()) {
+        if (Character.isUpperCase(ch)) hasUppercase = true;
+        else if (Character.isLowerCase(ch)) hasLowercase = true;
+        else if (!Character.isLetterOrDigit(ch)) hasSpecialChar = true;
+
+        // If all conditions are met, no need to continue
+        if (hasUppercase && hasLowercase && hasSpecialChar) return true;
+    }
+
+    return false;
+
     }
 }
