@@ -7,8 +7,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.Vector;
 
@@ -17,25 +15,17 @@ public class DEODashboardView extends JFrame {
     private JTable vendorTable, productTable;
     private JButton addVendorButton, addProductButton, editVendorButton, editProductButton, deleteVendorButton, deleteProductButton;
     private DEOController controller;
-
+static Font headerFont,tableTitleFont,buttonFont;
+static  Color bgColor,headerColor,buttonColor , lightBlue ,borderColor;
     public DEODashboardView() {
         controller = new DEOController();
         setTitle("DEO Dashboard");
         setSize(1200, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
         
-        Font headerFont = new Font("Poppins", Font.BOLD, 28);
-        Font tableTitleFont = new Font("Poppins", Font.BOLD, 16);
-        Font buttonFont = new Font("Poppins", Font.PLAIN, 12);
-        Color bgColor = Color.WHITE;
-        Color headerColor = new Color(38, 70, 83);
-        Color buttonColor = new Color(108, 167, 255);
-        Color lightBlue = new Color(227, 238, 254);
-        Color borderColor = new Color(173, 216, 230);
+       viewFontandColour();
 
-        
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(bgColor);
 
@@ -119,7 +109,17 @@ public class DEODashboardView extends JFrame {
         setVisible(true);
     }
 
-    
+    private void viewFontandColour()
+            {
+                 this.headerFont = new Font("Poppins", Font.BOLD, 28);
+        this.tableTitleFont = new Font("Poppins", Font.BOLD, 16);
+         this.buttonFont = new Font("Poppins", Font.PLAIN, 12);
+       this.bgColor = Color.WHITE;
+        this.headerColor = new Color(38, 70, 83);
+        this.buttonColor = new Color(108, 167, 255);
+        this.lightBlue = new Color(227, 238, 254);
+         this.borderColor = new Color(173, 216, 230);
+            }
     private JButton createStyledButton(String text, Font font, Color color) {
         JButton button = new JButton(text);
         button.setFont(font);
@@ -210,7 +210,7 @@ public class DEODashboardView extends JFrame {
 
 private void openAddVendorForm() {
     JFrame addVendorFrame = new JFrame("Add New Vendor");
-    addVendorFrame.setSize(500, 400); // Increased size for better layout
+    addVendorFrame.setSize(500, 400); 
     addVendorFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     addVendorFrame.setLocationRelativeTo(null);
 
